@@ -1,18 +1,16 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
-import {
-  Fragment,
-  getCookies,
-  h,
-  Handlers,
-  Head,
-  PageProps,
-  Prism,
-  tw,
-} from "../deps.ts";
-import { CircleArrow, DeployLogo } from "../components/Logos.tsx";
-import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
-import { TOC, version } from "../utils/toc.ts";
+
+import { Fragment, h } from "preact";
+import { Handlers, PageProps } from "fresh/server.ts";
+import { Head } from "fresh/runtime.ts";
+import { tw } from "twind";
+import Prism from "prism";
+import { getCookies } from "std/http/cookie.ts";
+
+import { CircleArrow, DeployLogo } from "components/Logos.tsx";
+import { Example, ExampleSnippet, parseExample } from "utils/example.ts";
+import { TOC, version } from "utils/toc.ts";
 
 interface Data {
   token: string;

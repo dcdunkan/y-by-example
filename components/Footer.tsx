@@ -1,6 +1,7 @@
 /** @jsx h */
 
-import { h, tw } from "../deps.ts";
+import { h } from "preact";
+import { tw } from "twind";
 
 const FOOTER_LINKS = [
   ["https://telegram.me/grammyjs_news", "News"],

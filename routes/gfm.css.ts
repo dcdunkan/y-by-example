@@ -1,4 +1,5 @@
-import { CSS, Handlers } from "../deps.ts";
+import { CSS } from "gfm";
+import { Handlers } from "fresh/server.ts";
 
 export const handler: Handlers = {
   GET() {
