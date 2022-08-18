@@ -1,5 +1,4 @@
-import { IS_BROWSER } from "fresh/runtime.ts";
-import { Configuration, setup } from "twind";
+import { Configuration, IS_BROWSER, setup } from "../deps.ts";
 
 export const config: Configuration = {
   darkMode: "class",

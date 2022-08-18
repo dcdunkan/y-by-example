@@ -1,14 +1,19 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
 
-import { Fragment, h } from "preact";
-import { Handlers, PageProps } from "fresh/server.ts";
-import { Head } from "fresh/runtime.ts";
-import { tw } from "twind";
-import { getCookies, setCookie } from "std/http/cookie.ts";
-import { Footer } from "components/Footer.tsx";
-import { Example, parseExample } from "utils/example.ts";
-import { TOC } from "utils/toc.ts";
+import {
+  Fragment,
+  getCookies,
+  h,
+  Handlers,
+  Head,
+  PageProps,
+  setCookie,
+  tw,
+} from "../deps.ts";
+import { TOC } from "../utils/toc.ts";
+import { Example, parseExample } from "../utils/example.ts";
+import { Footer } from "../components/Footer.tsx";
 
 interface Data {
   examples: Example[];
