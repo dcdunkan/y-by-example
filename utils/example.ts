@@ -16,6 +16,7 @@ export interface Example {
   run?: string;
   playground?: string;
   files: ExampleFile[];
+  footer: string;
 }
 
 export function parseExample(id: string, file: string): Example {
@@ -50,6 +51,7 @@ export function parseExample(id: string, file: string): Example {
   let currentFile = files[0];
   let text = "";
   let code = "";
+  let footer = "";
 
   for (const line of rest.split("\n")) {
     const trimmedLine = line.trim();
@@ -96,6 +98,8 @@ export function parseExample(id: string, file: string): Example {
         // skip lint directives
       } else if (trimmedLine.startsWith("//-")) {
         code += line.replace("//-", "//") + "\n";
+      } else if (trimmedLine.startsWith("//#")) {
+        footer += line.slice(3).trimEnd() + "\n";
       } else if (trimmedLine.startsWith("//")) {
         if (text || code.trimEnd()) {
           code = code.trimEnd();
@@ -136,7 +140,6 @@ export function parseExample(id: string, file: string): Example {
     throw new Error("Missing title in JS doc comment.");
   }
 
-
   const additionalResources: [string, string][] = [];
   for (const resource of resources) {
     // @resource {https://deno.land/std/http/server.ts} std/http/server.ts
@@ -155,5 +158,6 @@ export function parseExample(id: string, file: string): Example {
     run: kvs.run,
     playground: kvs.playground,
     files,
+    footer,
   };
 }

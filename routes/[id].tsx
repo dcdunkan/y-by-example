@@ -11,8 +11,10 @@ import {
   tw,
 } from "../deps.ts";
 import { CircleArrow, DeployLogo } from "../components/Logos.tsx";
+import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
-import { TOC, version } from "../utils/toc.ts";
+import { CONTENTS } from "../utils/contents.ts";
+import { VERSIONS } from "../utils/versions.ts";
 
 interface Data {
   token: string;
@@ -37,9 +39,9 @@ export const handler: Handlers<Data> = {
     let prev: Example | null;
     let next: Example | null;
     try {
-      const cur = TOC.indexOf(id);
-      const prevId = TOC[cur - 1];
-      const nextId = TOC[cur + 1];
+      const cur = CONTENTS.indexOf(id);
+      const prevId = CONTENTS[cur - 1];
+      const nextId = CONTENTS[cur + 1];
       const [data, prevData, nextData] = await Promise.all(
         [id, prevId, nextId].map((name) =>
           name ? Deno.readTextFile(`./data/${name}.ts`) : Promise.resolve("")
@@ -71,17 +73,17 @@ export const handler: Handlers<Data> = {
 
       const file = example.files[0];
 
-      let code = `let __BOT_TOKEN = prompt("Enter your Bot Token:");
-if (!__BOT_TOKEN) throw new Error("Invalid bot token.");\n\n`;
+      let code = `let __BOT_TOKEN__ = prompt("Enter your Bot Token:");
+if (!__BOT_TOKEN__) throw new Error("Invalid bot token.");\n\n`;
 
       for (const snippet of file.snippets) {
         code += snippet.code + "\n";
       }
 
-      code = code.replace(/"<REPLACE_BOT_TOKEN>"/g, "__BOT_TOKEN");
+      code = code.replace(/"<REPLACE_BOT_TOKEN>"/g, "__BOT_TOKEN__");
       code = code.replace(
         /https:\/\/deno\.land\/x\/grammy(|@v\d+.\d+.\d+)\/(.+)/g,
-        `https://deno.land/x/grammy@${version}/$2`,
+        `https://deno.land/x/grammy@${VERSIONS.grammy}/$2`,
       );
 
       return new Response(code, {
@@ -116,8 +118,16 @@ export default function ExamplePage(props: PageProps<Data>) {
         <link rel="stylesheet" href="/gfm.css" />
         <meta name="description" content={description} />
       </Head>
-      <main class={tw`max-w-screen-lg mx-auto p-4`}>
+      <main class={tw`max-w-screen-lg mt-6 mx-auto p-4`}>
+        <h4 class={tw`text-gray-500`}>
+          <a class={tw`hover:underline hover:text-grammy-500`} href="/">
+            Examples
+          </a>
+          {" /"}
+        </h4>
+
         <h1 class={tw`mt-2 text-3xl font-bold`}>{example.title}</h1>
+
         {example.description && (
           <div class={tw`mt-1`}>
             <p class={tw`text-gray-500`}>
@@ -125,6 +135,7 @@ export default function ExamplePage(props: PageProps<Data>) {
             </p>
           </div>
         )}
+
         {example.files.map((file) => (
           <div class={tw`mt-5`}>
             {file.snippets.map((snippet, i) => (
@@ -139,6 +150,15 @@ export default function ExamplePage(props: PageProps<Data>) {
             ))}
           </div>
         ))}
+
+        {example.footer && (
+          <div class={tw`mt-4`}>
+            <p class={tw`text-gray-700`}>
+              {example.footer}
+            </p>
+          </div>
+        )}
+
         <div class={tw`grid grid-cols-1 sm:grid-cols-5 gap-x-6`}>
           <div class={tw`col-span-2 mt-8`} />
           <div class={tw`col-span-3 mt-8`}>
@@ -146,7 +166,7 @@ export default function ExamplePage(props: PageProps<Data>) {
               <>
                 <p class={tw`text-gray-700`}>
                   Run{" "}
-                  <a href={url} class={tw`hover:underline focus:underline`}>
+                  <a href={url} class={tw`hover:underline hover:text-grammy-500 focus:underline`}>
                     this example
                   </a>{" "}
                   locally using the Deno CLI:
@@ -158,6 +178,7 @@ export default function ExamplePage(props: PageProps<Data>) {
                 </pre>
               </>
             )}
+
             {example.playground && (
               <div class={tw`col-span-3 mt-8`}>
                 <p class={tw`text-gray-700`}>
@@ -176,6 +197,7 @@ export default function ExamplePage(props: PageProps<Data>) {
                 </p>
               </div>
             )}
+
             {example.additionalResources.length > 0 && (
               <div class={tw`col-span-3 mt-12 pt-6 border-t-1 border-gray-200`}>
                 <p class={tw`text-gray-500`}>
@@ -184,11 +206,11 @@ export default function ExamplePage(props: PageProps<Data>) {
                 <ul class={tw`list-disc list-inside mt-1`}>
                   {example.additionalResources.map(([link, title]) => (
                     <li
-                      class={tw`text-gray-700 hover:text-gray-900`}
+                      class={tw`text-gray-700`}
                       key={link + title}
                     >
                       <a
-                        class={tw`hover:underline focus:underline`}
+                        class={tw`hover:underline hover:text-grammy-500 focus:underline`}
                         href={link}
                       >
                         {title}
@@ -224,6 +246,7 @@ export default function ExamplePage(props: PageProps<Data>) {
           )}
         </div>
       </main>
+      <Footer />
     </>
   );
 }
@@ -240,9 +263,10 @@ function SnippetComponent(props: {
     props.token || "BOT_TOKEN",
   );
 
+  // TODO: replacing for all modules.
   props.snippet.code = props.snippet.code.replace(
     /https:\/\/deno\.land\/x\/grammy(@\d.\d.\d|)\/(.+)/g,
-    `https://deno.land/x/grammy@${version}/$2`,
+    `https://deno.land/x/grammy@${VERSIONS.grammy}/$2`,
   );
 
   const renderedSnippet = Prism.highlight(
@@ -274,8 +298,9 @@ function SnippetComponent(props: {
             {props.filename}
           </span>
         )}
+
         <div
-          class={tw`px-4 py-4 text-sm overflow-scroll sm:overflow-hidden relative gfm-highlight`}
+          class={tw`px-4 py-4 text-sm overflow-auto relative gfm-highlight`}
         >
           <pre dangerouslySetInnerHTML={{ __html: renderedSnippet }} />
         </div>
