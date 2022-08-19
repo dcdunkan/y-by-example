@@ -1,3 +1,5 @@
 export const CONTENTS = [
-  "hello-world"
+  "hello-world",
+  "commands",
+  "message-formatting",
 ];

@@ -131,6 +131,7 @@ export function parseExample(id: string, file: string): Example {
       }
     }
   }
+
   if (text || code.trimEnd()) {
     code = code.trimEnd();
     currentFile.snippets.push({ text, code });
