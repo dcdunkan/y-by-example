@@ -12,7 +12,7 @@ const FOOTER_LINKS = [
 
 export function Footer() {
   return (
-    <footer class={tw`flex justify-between items-end p-8 pt-32`}>
+    <footer class={tw`flex justify-between items-end p-8`}>
       <div class={tw`flex align-center`}>
         <p class={tw`select-none text-grammy-500 ml-4 font-bold text-xl`}>
           <a href="https://grammy.dev">grammY</a>
@@ -20,7 +20,7 @@ export function Footer() {
       </div>
       <div class={tw`flex flex-col lg:flex-row gap-x-8 gap-y-6 text-right`}>
         {FOOTER_LINKS.map(([href, text]) => (
-          <a href={href} class={tw`text-gray-500 hover:underline`}>{text}</a>
+          <a href={href} class={tw`text-gray-500 hover:text-grammy-500`}>{text}</a>
         ))}
       </div>
     </footer>
