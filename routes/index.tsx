@@ -24,7 +24,7 @@ export const handler: Handlers<Data> = {
   async GET(req, ctx) {
     const examples = await Promise.all(
       CONTENTS.map((id) =>
-        Deno.readTextFile(`./data/${id}.ts`)
+        Deno.readTextFile(`./contents/${id}.ts`)
           .then((text) => parseExample(id, text))
       ),
     );
@@ -35,7 +35,7 @@ export const handler: Handlers<Data> = {
   async POST(req, ctx) {
     const examples = await Promise.all(
       CONTENTS.map((id) =>
-        Deno.readTextFile(`./data/${id}.ts`)
+        Deno.readTextFile(`./contents/${id}.ts`)
           .then((text) => parseExample(id, text))
       ),
     );

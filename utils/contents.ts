@@ -1,6 +1,6 @@
 const CONTENTS: string[] = [];
 
-for await (const { name } of Deno.readDir("data")) {
+for await (const { name } of Deno.readDir("contents")) {
   CONTENTS.push(name.split(".")[0]);
 }
 

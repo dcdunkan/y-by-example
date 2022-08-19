@@ -44,7 +44,7 @@ export const handler: Handlers<Data> = {
       const nextId = CONTENTS[cur + 1];
       const [data, prevData, nextData] = await Promise.all(
         [id, prevId, nextId].map((name) =>
-          name ? Deno.readTextFile(`./data/${name}.ts`) : Promise.resolve("")
+          name ? Deno.readTextFile(`./contents/${name}.ts`) : Promise.resolve("")
         ),
       );
       example = parseExample(id, data);
