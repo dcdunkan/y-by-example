@@ -24,6 +24,6 @@ bot.on("message", (ctx) => ctx.reply("Hello, World!"));
 // Finally, to make this cool Hello World bot online, lets start it.
 bot.start();
 
-//# Thats it! You have created a "Hello, World" bot in just 4 lines of code!
-//# Now try sending messages to your bot.
-//# You can change the "Hello, World" to anything that you like the bot to say.
+// Thats it! You have created a "Hello, World" bot in just 4 lines of code!
+// Now try sending messages to your bot.
+// You can change the "Hello, World" to anything that you like the bot to say.

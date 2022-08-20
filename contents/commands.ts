@@ -53,7 +53,7 @@ bot.command("grammy", async (ctx) => {
 // Finally, make the bot online.
 bot.start();
 
-//# Go create some commands and make your bot do something cool when that command is triggered.
-//# Here is something for you to try:
-//# A joke command that gives random jokes.
-//# If you can't figure it out by yourself, read the other examples, you'll find it in one of them!
+// Go create some commands and make your bot do something cool when that command is triggered.
+// Here is something for you to try:
+// A joke command that gives random jokes.
+// If you can't figure it out by yourself, read the other examples, you'll find it in one of them!

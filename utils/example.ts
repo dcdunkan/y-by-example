@@ -51,7 +51,6 @@ export function parseExample(id: string, file: string): Example {
   let currentFile = files[0];
   let text = "";
   let code = "";
-  let footer = "";
 
   for (const line of rest.split("\n")) {
     const trimmedLine = line.trim();
@@ -98,8 +97,6 @@ export function parseExample(id: string, file: string): Example {
         // skip lint directives
       } else if (trimmedLine.startsWith("//-")) {
         code += line.replace("//-", "//") + "\n";
-      } else if (trimmedLine.startsWith("//#")) {
-        footer += line.slice(3).trimEnd() + "\n";
       } else if (trimmedLine.startsWith("//")) {
         if (text || code.trimEnd()) {
           code = code.trimEnd();
@@ -150,6 +147,11 @@ export function parseExample(id: string, file: string): Example {
     }
     additionalResources.push([url, title]);
   }
+
+  const lastSnippet = currentFile.snippets[currentFile.snippets.length - 1];
+  const footer = lastSnippet.code === "" && lastSnippet.text !== ""
+    ? lastSnippet.text
+    : "";
 
   return {
     id,
