@@ -1,6 +1,6 @@
 /** @jsx h */
-
-import { h, tw } from "../deps.ts";
+import { h } from "preact";
+import { tw } from "@twind";
 
 const FOOTER_LINKS = [
   ["https://telegram.me/grammyjs_news", "News"],
@@ -20,7 +20,9 @@ export function Footer() {
       </div>
       <div class={tw`flex flex-col lg:flex-row gap-x-8 gap-y-6 text-right`}>
         {FOOTER_LINKS.map(([href, text]) => (
-          <a href={href} class={tw`text-gray-500 hover:text-grammy-500`}>{text}</a>
+          <a href={href} class={tw`text-gray-500 hover:text-grammy-500`}>
+            {text}
+          </a>
         ))}
       </div>
     </footer>

@@ -1,15 +1,11 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
-import {
-  Fragment,
-  getCookies,
-  h,
-  Handlers,
-  Head,
-  PageProps,
-  Prism,
-  tw,
-} from "../deps.ts";
+import { Fragment, h } from "preact";
+import { getCookies } from "std/http/cookie.ts";
+import { Head } from "$fresh/runtime.ts";
+import { Handlers, PageProps } from "$fresh/server.ts";
+import { tw } from "@twind";
+import Prism from "prism";
 import { CircleArrow, DeployLogo } from "../components/Logos.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
@@ -44,7 +40,9 @@ export const handler: Handlers<Data> = {
       const nextId = CONTENTS[cur + 1];
       const [data, prevData, nextData] = await Promise.all(
         [id, prevId, nextId].map((name) =>
-          name ? Deno.readTextFile(`./contents/${name}.ts`) : Promise.resolve("")
+          name
+            ? Deno.readTextFile(`./contents/${name}.ts`)
+            : Promise.resolve("")
         ),
       );
       example = parseExample(id, data);
@@ -166,7 +164,10 @@ export default function ExamplePage(props: PageProps<Data>) {
               <>
                 <p class={tw`text-gray-700`}>
                   Run{" "}
-                  <a href={url} class={tw`hover:underline hover:text-grammy-500 focus:underline`}>
+                  <a
+                    href={url}
+                    class={tw`hover:underline hover:text-grammy-500 focus:underline`}
+                  >
                     this example
                   </a>{" "}
                   locally using the Deno CLI:
