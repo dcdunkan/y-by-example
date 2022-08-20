@@ -108,11 +108,12 @@ export default function ExamplePage(props: PageProps<Data>) {
   const url = `${props.url.origin}${props.url.pathname}.ts`;
 
   const description = (example.description || example.title) +
-    " -- grammY by example is a collection of annotated examples for how to use grammY, and the various features it provides.";
+    " -- grammY by example is a collection of annotated examples to help beginners to get started with grammY, and the various features and plugins that comes with it.";
 
   return (
     <>
       <Head>
+        <title>{example.title} - grammY by example</title>
         <link rel="stylesheet" href="/gfm.css" />
         <meta name="description" content={description} />
       </Head>
