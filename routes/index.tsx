@@ -1,16 +1,10 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
-
-import {
-  Fragment,
-  getCookies,
-  h,
-  Handlers,
-  Head,
-  PageProps,
-  setCookie,
-  tw,
-} from "../deps.ts";
+import { Fragment, h } from "preact";
+import { Head } from "$fresh/runtime.ts";
+import { Handlers, PageProps } from "$fresh/server.ts";
+import { getCookies, setCookie } from "std/http/cookie.ts";
+import { tw } from "@twind";
 import { CONTENTS } from "../utils/contents.ts";
 import { Example, parseExample } from "../utils/example.ts";
 import { Footer } from "../components/Footer.tsx";
@@ -188,7 +182,10 @@ export default function IndexPage(props: PageProps<Data>) {
             License
           </a>{" "}
           | Based on{" "}
-          <a href="https://examples.deno.land/" class={tw`underline hover:text-grammy-500`}>
+          <a
+            href="https://examples.deno.land/"
+            class={tw`underline hover:text-grammy-500`}
+          >
             Deno by Example
           </a>
         </p>

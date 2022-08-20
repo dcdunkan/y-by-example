@@ -1,6 +1,5 @@
 /** @jsx h */
-
-import { h } from "../deps.ts";
+import { h } from "preact";
 
 export function CircleArrow(props: { right?: boolean }) {
   return (
