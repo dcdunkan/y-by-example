@@ -136,6 +136,14 @@ export default function ExamplePage(props: PageProps<Data>) {
           </div>
         )}
 
+        {example.introduction && (
+          <div class={tw`mt-4`}>
+            <p class={tw`text-gray-700`}>
+              {example.introduction}
+            </p>
+          </div>
+        )}
+
         {example.files.map((file) => (
           <div class={tw`mt-5`}>
             {file.snippets.map((snippet, i) => (
@@ -151,10 +159,10 @@ export default function ExamplePage(props: PageProps<Data>) {
           </div>
         ))}
 
-        {example.footer && (
+        {example.conclusion && (
           <div class={tw`mt-4`}>
             <p class={tw`text-gray-700`}>
-              {example.footer}
+              {example.conclusion}
             </p>
           </div>
         )}

@@ -1,12 +1,13 @@
 /**
  * @title Commands
- * @about Create and assign actions to commands.
  * @run <url>
  * @resource {https://grammy.dev/guide/basics.html#receiving-messages} Docs: Receiving Messages
- *
- * Commands are the standard way to trigger your bot to do something.
- * Lets find out how to make your bot obey when you send a /command.
+ * 
+ * Create and assign actions to commands.
  */
+
+// Commands are the standard way to trigger your bot to do something.
+// Lets find out how to make your bot obey when you send a /command.
 
 // Lets setup the bot as we seen in the Hello World example.
 import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";

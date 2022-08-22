@@ -1,13 +1,13 @@
 /**
  * @title Message Formatting
- * @about Format bot's text messages using parse modes.
  * @run <url>
  * @resource {https://grammy.dev/guide/basics.html#sending-message-with-formatting} Docs: Sending Message With Formatting
  * @resource {https://core.telegram.org/bots/api#formatting-options} Bot API Manual: Formatting Options
  *
- * Telegram allows you to format your messages and make them look better.
- * By providing 'parse_mode' option while sending messages, your bot can also do this.
+ * Format bot's text messages using parse modes.
  */
+// Telegram allows you to format your messages and make them look better.
+// By providing 'parse_mode' option while sending messages, your bot can also do this.
 
 // As usual, import the main `Bot` class from grammY.
 import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";

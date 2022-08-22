@@ -12,12 +12,12 @@ export interface Example {
   id: string;
   title: string;
   description: string;
-  about: string;
   additionalResources: [string, string][];
   run?: string;
   playground?: string;
   files: ExampleFile[];
-  footer: string;
+  introduction: string;
+  conclusion: string;
 }
 
 export function parseExample(id: string, file: string): Example {
@@ -151,12 +151,17 @@ export function parseExample(id: string, file: string): Example {
     additionalResources.push([url, title]);
   }
 
+  const firstSnippet = currentFile.snippets.shift()!;
+  const introduction = firstSnippet.code === "" && firstSnippet.text !== ""
+    ? firstSnippet.text
+    : "";
+
   const lastSnippet = currentFile.snippets[currentFile.snippets.length - 1];
-  const footer = lastSnippet.code === "" && lastSnippet.text !== ""
+  const conclusion = lastSnippet.code === "" && lastSnippet.text !== ""
     ? lastSnippet.text
     : "";
 
-  if (footer) {
+  if (conclusion) {
     files[0].snippets.pop();
   }
 
@@ -164,11 +169,11 @@ export function parseExample(id: string, file: string): Example {
     id,
     title: kvs.title,
     description,
-    about: kvs.about,
     additionalResources,
     run: kvs.run,
     playground: kvs.playground,
     files,
-    footer,
+    introduction,
+    conclusion,
   };
 }

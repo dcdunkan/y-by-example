@@ -1,12 +1,13 @@
 /**
  * @title Hello World
- * @about Make your bot say Hello, World!
  * @run <url>
  * @resource {https://grammy.dev/guide/getting-started.html} Docs: Getting Started
  *
- * Every documentations and tutorials usually starts with a "Hello, World" program.
- * You can make your bot say "Hello, World" to the user with very few lines of code using grammY.
+ * Make your bot say Hello, World!
  */
+
+// Every documentations and tutorials usually starts with a "Hello, World" program.
+// You can make your bot say "Hello, World" to the user with very few lines of code using grammY.
 
 // First, let's import the main `Bot` class from grammY.
 import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";

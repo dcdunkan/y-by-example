@@ -109,7 +109,7 @@ export default function IndexPage(props: PageProps<Data>) {
                 class={tw`transition ease-in-out delay-50 hover:text-grammy-500 text-gray-900`}
               >
                 <p class={tw`font-medium`}>{example.title}</p>
-                <p class={tw`text-gray-500`}>{example.about}</p>
+                <p class={tw`text-gray-500`}>{example.description}</p>
               </a>
             </li>
           ))}
