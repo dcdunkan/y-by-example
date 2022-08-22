@@ -1,6 +1,7 @@
 /**
  * @title Hello World
- * @run <url>
+ * @run
+ * @deno_cli <url>
  * @resource {https://grammy.dev/guide/getting-started.html} Docs: Getting Started
  *
  * Make your bot say Hello, World!
