@@ -1,6 +1,7 @@
 /** @jsx h */
 import { h } from "preact";
 import { tw } from "@twind";
+import { Grammy } from "./Logos.tsx";
 
 const FOOTER_LINKS = [
   ["https://telegram.me/grammyjs_news", "News"],
@@ -15,7 +16,9 @@ export function Footer() {
     <footer class={tw`flex justify-between items-end p-8`}>
       <div class={tw`flex align-center`}>
         <p class={tw`select-none text-grammy-500 ml-4 font-bold text-xl`}>
-          <a href="https://grammy.dev">grammY</a>
+          <a href="https://grammy.dev">
+            <Grammy />
+          </a>
         </p>
       </div>
       <div class={tw`flex flex-col lg:flex-row gap-x-8 gap-y-6 text-right`}>

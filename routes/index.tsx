@@ -8,6 +8,7 @@ import { tw } from "@twind";
 import { CONTENTS } from "../utils/contents.ts";
 import { Example, parseExample } from "../utils/example.ts";
 import { Footer } from "../components/Footer.tsx";
+import { GrammyByExample } from "../components/Logos.tsx";
 
 interface Data {
   examples: Example[];
@@ -66,17 +67,7 @@ export default function IndexPage(props: PageProps<Data>) {
       </Head>
 
       <main class={tw`mt-10 p-4 mx-auto max-w-screen-md`}>
-        <h1 class={tw`select-none`}>
-          <span class={tw`text(5xl gray-900) tracking-tight font-bold`}>
-            grammY
-          </span>
-          <br />
-          <span
-            class={tw`text(3xl gray-700) tracking-tight italic font-medium`}
-          >
-            by example
-          </span>
-        </h1>
+        <GrammyByExample/>
         <p class={tw`mt-8 text-gray-900`}>
           <a
             href="https://grammy.dev"

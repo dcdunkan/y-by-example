@@ -7,7 +7,7 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
 import Prism from "prism";
 import "https://esm.sh/prismjs@1.25.0/components/prism-typescript.js?no-check&pin=v55";
-import { CircleArrow, DeployLogo } from "../components/Logos.tsx";
+import { CircleArrow, DeployLogo } from "../components/Icons.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
 import { CONTENTS } from "../utils/contents.ts";
