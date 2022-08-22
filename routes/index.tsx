@@ -67,7 +67,7 @@ export default function IndexPage(props: PageProps<Data>) {
       </Head>
 
       <main class={tw`mt-10 p-4 mx-auto max-w-screen-md`}>
-        <GrammyByExample/>
+        <GrammyByExample />
         <p class={tw`mt-8 text-gray-900`}>
           <a
             href="https://grammy.dev"
@@ -76,14 +76,13 @@ export default function IndexPage(props: PageProps<Data>) {
             grammY
           </a>{" "}
           is a framework for creating Telegram bots. It can be used from
-          TypeScript and JavaScript and runs on Node.js, Deno, and in the
-          browser.
+          TypeScript and JavaScript and runs on both Deno and Node.js.
         </p>
         <p class={tw`mt-6 text-gray-900`}>
           grammY by example is a collection of annotated examples to help
-          beginners to get started with grammY, and the various features and
-          plugins that comes with it. If you're looking for a well-explained
-          complete guide, start reading grammY{" "}
+          beginners get started with grammY, know about its various features and
+          plugins available for it. If you're looking for a well-explained and
+          complete guide, see the{" "}
           <a
             href="https://grammy.dev"
             class={tw`text-grammy-500 hover:underline`}
@@ -107,7 +106,7 @@ export default function IndexPage(props: PageProps<Data>) {
         </ul>
 
         <p class={tw`mt-6 text-gray-900`}>
-          Bots can either be written in JavaScript or TypeScript. All code in
+          Bots can be written in either JavaScript or TypeScript. All code in
           these examples is written in TypeScript, but all the examples also
           work in JavaScript.
         </p>
