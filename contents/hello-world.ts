@@ -1,5 +1,6 @@
 /**
  * @title Hello World
+ * @about Make your bot say Hello, World!
  * @run <url>
  * @resource {https://grammy.dev/guide/getting-started.html} Docs: Getting Started
  *

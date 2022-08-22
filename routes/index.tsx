@@ -101,11 +101,15 @@ export default function IndexPage(props: PageProps<Data>) {
           </a>.
         </p>
 
-        <ul class={tw`mt-6 text-gray-900`}>
+        <ul class={tw`mt-6`}>
           {examples.map((example) => (
-            <li>
-              <a href={`/${example.id}`} class={tw`underline`}>
-                {example.title}
+            <li class={tw`py-2`}>
+              <a
+                href={`/${example.id}`}
+                class={tw`transition ease-in-out delay-50 hover:text-grammy-500 text-gray-900`}
+              >
+                <p class={tw`font-medium`}>{example.title}</p>
+                <p class={tw`text-gray-500`}>{example.about}</p>
               </a>
             </li>
           ))}

@@ -12,6 +12,7 @@ export interface Example {
   id: string;
   title: string;
   description: string;
+  about: string;
   additionalResources: [string, string][];
   run?: string;
   playground?: string;
@@ -27,6 +28,7 @@ export function parseExample(id: string, file: string): Example {
   let description = "";
   const kvs: Record<string, string> = {};
   const resources = [];
+
   for (let line of jsdoc.split("\n")) {
     line = line.trim().replace(/^\*/, "").trim();
     const [, key, value] = line.match(/^\s*@(\w+)\s+(.*)/) || [];
@@ -40,6 +42,7 @@ export function parseExample(id: string, file: string): Example {
       description += " " + line;
     }
   }
+
   description = description.trim();
 
   // Seperate the code into snippets.
@@ -161,6 +164,7 @@ export function parseExample(id: string, file: string): Example {
     id,
     title: kvs.title,
     description,
+    about: kvs.about,
     additionalResources,
     run: kvs.run,
     playground: kvs.playground,

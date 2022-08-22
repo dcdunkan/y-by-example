@@ -1,5 +1,6 @@
 /**
  * @title Commands
+ * @about Create and assign actions to commands.
  * @run <url>
  * @resource {https://grammy.dev/guide/basics.html#receiving-messages} Docs: Receiving Messages
  *

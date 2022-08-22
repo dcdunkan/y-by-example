@@ -1,5 +1,6 @@
 /**
  * @title Message Formatting
+ * @about Format bot's text messages using parse modes.
  * @run <url>
  * @resource {https://grammy.dev/guide/basics.html#sending-message-with-formatting} Docs: Sending Message With Formatting
  * @resource {https://core.telegram.org/bots/api#formatting-options} Bot API Manual: Formatting Options
