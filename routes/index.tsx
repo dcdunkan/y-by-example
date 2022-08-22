@@ -91,7 +91,7 @@ export default function IndexPage(props: PageProps<Data>) {
         <p class={tw`mt-6 text-gray-900`}>
           grammY by example is a collection of annotated examples to help
           beginners to get started with grammY, and the various features and
-          plugins that comes with grammY. If you're looking for a well-explained
+          plugins that comes with it. If you're looking for a well-explained
           complete guide, start reading grammY{" "}
           <a
             href="https://grammy.dev"
