@@ -153,6 +153,10 @@ export function parseExample(id: string, file: string): Example {
     ? lastSnippet.text
     : "";
 
+  if (footer) {
+    files[0].snippets.pop();
+  }
+
   return {
     id,
     title: kvs.title,
