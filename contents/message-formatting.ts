@@ -49,5 +49,5 @@ bot.command("id", async (ctx) => {
 bot.start();
 
 // Now you know how to make your bot's messages look cooler in chats.
-// Check out the additional resources below for more information related to message formatting.
 // grammY has an official parse mode plugin which makes your code much cleaner and simplifies the work.
+// Check out the additional resources below for more information related to message formatting.
