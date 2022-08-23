@@ -12,11 +12,14 @@ export interface Example {
   id: string;
   title: string;
   description: string;
-  additionalResources: [string, string][];
-  run?: string;
-  playground?: string;
+  introduction: string;
   files: ExampleFile[];
-  footer: string;
+  conclusion: string;
+  additionalResources: [string, string][];
+  run: boolean;
+  deno_cli?: string;
+  deno_pg?: string;
+  stackblitz?: string;
 }
 
 export function parseExample(id: string, file: string): Example {
@@ -24,14 +27,21 @@ export function parseExample(id: string, file: string): Example {
   const [, jsdoc, rest] = file.match(/^\s*\/\*\*(.*?)\*\/\s*(.*)/s) || [];
 
   // Extract the @key value pairs from the JS doc comment
+  let run = false;
   let description = "";
   const kvs: Record<string, string> = {};
   const resources = [];
+
   for (let line of jsdoc.split("\n")) {
     line = line.trim().replace(/^\*/, "").trim();
-    const [, key, value] = line.match(/^\s*@(\w+)\s+(.*)/) || [];
+    const [, key, value] = line.match(/^\s*@(\w+)(?:\s+(.*))?/) || [];
     if (key) {
-      if (key === "resource") {
+      if (kvs[key]) {
+        throw new SyntaxError(`Duplicate '${key}' in example '${id}'`);
+      }
+      if (key === "run") {
+        run = true;
+      } else if (key === "resource") {
         resources.push(value);
       } else {
         kvs[key] = value.trim();
@@ -40,6 +50,7 @@ export function parseExample(id: string, file: string): Example {
       description += " " + line;
     }
   }
+
   description = description.trim();
 
   // Seperate the code into snippets.
@@ -51,7 +62,6 @@ export function parseExample(id: string, file: string): Example {
   let currentFile = files[0];
   let text = "";
   let code = "";
-  let footer = "";
 
   for (const line of rest.split("\n")) {
     const trimmedLine = line.trim();
@@ -98,8 +108,6 @@ export function parseExample(id: string, file: string): Example {
         // skip lint directives
       } else if (trimmedLine.startsWith("//-")) {
         code += line.replace("//-", "//") + "\n";
-      } else if (trimmedLine.startsWith("//#")) {
-        footer += line.slice(3).trimEnd() + "\n";
       } else if (trimmedLine.startsWith("//")) {
         if (text || code.trimEnd()) {
           code = code.trimEnd();
@@ -151,14 +159,31 @@ export function parseExample(id: string, file: string): Example {
     additionalResources.push([url, title]);
   }
 
+  const firstSnippet = currentFile.snippets.shift()!;
+  const introduction = firstSnippet.code === "" && firstSnippet.text !== ""
+    ? firstSnippet.text
+    : "";
+
+  const lastSnippet = currentFile.snippets[currentFile.snippets.length - 1];
+  const conclusion = lastSnippet.code === "" && lastSnippet.text !== ""
+    ? lastSnippet.text
+    : "";
+
+  if (conclusion) {
+    files[0].snippets.pop();
+  }
+
   return {
     id,
-    title: kvs.title,
     description,
-    additionalResources,
-    run: kvs.run,
-    playground: kvs.playground,
+    introduction,
     files,
-    footer,
+    conclusion,
+    additionalResources,
+    run,
+    title: kvs.title,
+    deno_cli: kvs.deno_cli,
+    deno_pg: kvs.deno_pg,
+    stackblitz: kvs.stackblitz,
   };
 }

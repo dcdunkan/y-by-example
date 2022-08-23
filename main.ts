@@ -4,17 +4,15 @@
 /// <reference lib="deno.ns" />
 /// <reference lib="deno.unstable" />
 
-export { default as Prism } from "prism";
-
-import "https://esm.sh/prismjs@1.25.0/components/prism-jsx.js?no-check&pin=v55";
-import "https://esm.sh/prismjs@1.25.0/components/prism-typescript.js?no-check&pin=v55";
-import "https://esm.sh/prismjs@1.25.0/components/prism-tsx.js?no-check&pin=v55";
-
-import { InnerRenderFunction, RenderContext, start } from "$fresh/server.ts";
+import {
+  InnerRenderFunction,
+  RenderContext,
+  setup,
+  start,
+  virtualSheet,
+} from "./deps.ts";
 import manifest from "./fresh.gen.ts";
-
-import { config, setup } from "@twind";
-import { virtualSheet } from "twind/sheets";
+import { config } from "./utils/twind.ts";
 
 const sheet = virtualSheet();
 sheet.reset();

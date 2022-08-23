@@ -1,11 +1,14 @@
 /**
  * @title Hello World
- * @run <url>
+ * @run
+ * @deno_cli <url>
  * @resource {https://grammy.dev/guide/getting-started.html} Docs: Getting Started
  *
- * Every documentations and tutorials usually starts with a "Hello, World" program.
- * You can make your bot say "Hello, World" to the user with very few lines of code using grammY.
+ * Make your bot say Hello, World!
  */
+
+// Every documentations and tutorials usually starts with a "Hello, World" program.
+// You can make your bot say "Hello, World" to the user with very few lines of code using grammY.
 
 // First, let's import the main `Bot` class from grammY.
 import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";
@@ -24,6 +27,6 @@ bot.on("message", (ctx) => ctx.reply("Hello, World!"));
 // Finally, to make this cool Hello World bot online, lets start it.
 bot.start();
 
-//# Thats it! You have created a "Hello, World" bot in just 4 lines of code!
-//# Now try sending messages to your bot.
-//# You can change the "Hello, World" to anything that you like the bot to say.
+// Thats it! You have created a "Hello, World" bot in just 4 lines of code!
+// Now try sending messages to your bot.
+// You can change the "Hello, World" to anything that you like the bot to say.

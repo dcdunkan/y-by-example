@@ -8,6 +8,7 @@ import { tw } from "@twind";
 import { CONTENTS } from "../utils/contents.ts";
 import { Example, parseExample } from "../utils/example.ts";
 import { Footer } from "../components/Footer.tsx";
+import { GrammyByExample } from "../components/Logos.tsx";
 
 interface Data {
   examples: Example[];
@@ -66,17 +67,7 @@ export default function IndexPage(props: PageProps<Data>) {
       </Head>
 
       <main class={tw`mt-10 p-4 mx-auto max-w-screen-md`}>
-        <h1 class={tw`select-none`}>
-          <span class={tw`text(5xl gray-900) tracking-tight font-bold`}>
-            grammY
-          </span>
-          <br />
-          <span
-            class={tw`text(3xl gray-700) tracking-tight italic font-medium`}
-          >
-            by example
-          </span>
-        </h1>
+        <GrammyByExample />
         <p class={tw`mt-8 text-gray-900`}>
           <a
             href="https://grammy.dev"
@@ -85,14 +76,13 @@ export default function IndexPage(props: PageProps<Data>) {
             grammY
           </a>{" "}
           is a framework for creating Telegram bots. It can be used from
-          TypeScript and JavaScript and runs on Node.js, Deno, and in the
-          browser.
+          TypeScript and JavaScript and runs on both Deno and Node.js.
         </p>
         <p class={tw`mt-6 text-gray-900`}>
           grammY by example is a collection of annotated examples to help
-          beginners to get started with grammY, and the various features and
-          plugins that comes with grammY. If you're looking for a well-explained
-          complete guide, start reading grammY{" "}
+          beginners get started with grammY, know about its various features and
+          plugins available for it. If you're looking for a well-explained and
+          complete guide, see the{" "}
           <a
             href="https://grammy.dev"
             class={tw`text-grammy-500 hover:underline`}
@@ -101,18 +91,22 @@ export default function IndexPage(props: PageProps<Data>) {
           </a>.
         </p>
 
-        <ul class={tw`mt-6 text-gray-900`}>
+        <ul class={tw`mt-6`}>
           {examples.map((example) => (
-            <li>
-              <a href={`/${example.id}`} class={tw`underline`}>
-                {example.title}
+            <li class={tw`py-2`}>
+              <a
+                href={`/${example.id}`}
+                class={tw`transition ease-in-out delay-50 hover:text-grammy-500 text-gray-900`}
+              >
+                <p class={tw`font-medium`}>{example.title}</p>
+                <p class={tw`text-gray-500`}>{example.description}</p>
               </a>
             </li>
           ))}
         </ul>
 
         <p class={tw`mt-6 text-gray-900`}>
-          Bots can either be written in JavaScript or TypeScript. All code in
+          Bots can be written in either JavaScript or TypeScript. All code in
           these examples is written in TypeScript, but all the examples also
           work in JavaScript.
         </p>
