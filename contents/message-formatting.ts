@@ -1,6 +1,7 @@
 /**
  * @title Message Formatting
  * @run <url>
+ * @resource {https://grammy.dev/plugins/parse-mode} Plugins: Parse Mode
  * @resource {https://grammy.dev/guide/basics.html#sending-message-with-formatting} Docs: Sending Message With Formatting
  * @resource {https://core.telegram.org/bots/api#formatting-options} Bot API Manual: Formatting Options
  *
@@ -49,5 +50,4 @@ bot.start();
 
 // Now you know how to make your bot's messages look cooler in chats.
 // Check out the additional resources below for more information related to message formatting.
-// grammY also has an official parse mode plugin which makes your code much cleaner and simplify the work.
-// We'll look into that in a different chapter.
+// grammY has an official parse mode plugin which makes your code much cleaner and simplifies the work.
