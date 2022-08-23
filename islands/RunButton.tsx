@@ -1,9 +1,11 @@
 /** @jsx h */
 import { h } from "preact";
 import { useEffect, useState } from "preact/hooks";
+import { tw } from "twind";
 
 export default function RunButton({ id }: { id: string }) {
   const [disabled, setDisabled] = useState(true);
+  const [running, setRunning] = useState(false);
   const botToken = () =>
     Object.fromEntries(
       document.cookie.split(";").map((v) => v).map((v) => v.split("=")),
@@ -11,7 +13,6 @@ export default function RunButton({ id }: { id: string }) {
   // deno-lint-ignore no-explicit-any
   let bot: any;
   let busy = false;
-  let running = false;
 
   async function run() {
     if (busy) {
@@ -28,11 +29,12 @@ export default function RunButton({ id }: { id: string }) {
         drop_pending_updates: true,
         onStart: () => {
           busy = false;
-          running = true;
+          setRunning(true);
         },
       });
     } else {
       bot.stop();
+      setRunning(false);
       busy = false;
     }
   }
@@ -43,5 +45,13 @@ export default function RunButton({ id }: { id: string }) {
     }
   }, []);
 
-  return <button disabled={disabled} onClick={run}>Run</button>;
+  return (
+    <button
+      disabled={disabled || busy}
+      onClick={run}
+      class={tw`text-white bg-grammy-500 ml-2 hover:bg-grammy-500 focus:ring-4 focus:outline-none focus:ring-grammy-500 rounded-lg w-full sm:w-auto px-5 py-2.5 text-center`}
+    >
+      {running ? "Running" : busy ? "..." : "Run"}
+    </button>
+  );
 }
