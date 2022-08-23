@@ -1,6 +1,7 @@
 /**
  * @title Commands
- * @run <url>
+ * @run
+ * @deno_cli <url>
  * @resource {https://grammy.dev/guide/basics.html#receiving-messages} Docs: Receiving Messages
  *
  * Create and assign actions to commands.

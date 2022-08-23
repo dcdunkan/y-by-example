@@ -1,6 +1,7 @@
 /**
  * @title Message Formatting
- * @run <url>
+ * @run
+ * @deno_cli <url>
  * @resource {https://grammy.dev/guide/basics.html#sending-message-with-formatting} Docs: Sending Message With Formatting
  * @resource {https://core.telegram.org/bots/api#formatting-options} Bot API Manual: Formatting Options
  *
