@@ -10,7 +10,7 @@ export default function RunButton({ id }: { id: string }) {
     ).bot_token;
 
   async function run() {
-    const url = new URL(`/${id}.ts`, location.href);
+    const url = new URL(`/static/${id}.ts`, location.href);
     const { bot } = await import(`https://bundle.deno.dev/${url.toString()}`);
     console.log(bot);
   }
