@@ -38,14 +38,14 @@ bot.command("help", async (ctx) => {
 // There is also Markdown V1.
 // This only exists for backward compatibility.
 // You shouldn't be using this for your bot.
-// But for demonstration purposes:
+// But for demonstration purposes, here you go.
 bot.command("id", async (ctx) => {
   await ctx.reply("`" + ctx.chat.id + "`", {
     parse_mode: "Markdown",
   });
 });
 
-// Make the bot online.
+// Start your bot.
 bot.start();
 
 // Now you know how to make your bot's messages look cooler in chats.
