@@ -17,6 +17,7 @@ export default function RunButton({ id }: { id: string }) {
     ip = true;
     const url = new URL(`/static/${id}.ts`, location.href);
     const { bot } = await import(`https://bundle.deno.dev/${url.toString()}`);
+    bot.token = botToken();
     bot.start({ onStart: () => console.log(1) });
     ip = false;
   }
