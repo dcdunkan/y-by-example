@@ -8,11 +8,17 @@ export default function RunButton({ id }: { id: string }) {
     Object.fromEntries(
       document.cookie.split(";").map((v) => v).map((v) => v.split("=")),
     ).bot_token;
+  let ip = false;
 
   async function run() {
+    if (ip) {
+      return false;
+    }
+    ip = true;
     const url = new URL(`/static/${id}.ts`, location.href);
     const { bot } = await import(`https://bundle.deno.dev/${url.toString()}`);
-    console.log(bot);
+    bot.start({ onStart: () => console.log(1) });
+    ip = false;
   }
 
   useEffect(() => {
