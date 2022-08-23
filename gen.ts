@@ -6,12 +6,9 @@ try {
 }
 const files = [...Deno.readDirSync("contents")].map((v) => v.name);
 for (const file of files) {
+  const fromPath = join("contents", file);
   const toPath = join("static", file);
-  await Deno.copyFile(
-    join("contents", file),
-    toPath,
-  );
-  const content = await Deno.readTextFile(toPath);
+  const content = await Deno.readTextFile(fromPath);
   await Deno.writeTextFile(
     toPath,
     "// This file is generated. Do not edit.\n" +
