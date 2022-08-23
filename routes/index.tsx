@@ -129,7 +129,7 @@ export default function IndexPage(props: PageProps<Data>) {
             htmlFor="bot_token"
             class={tw`block mt-8 mb-2 font-medium text-gray-900`}
           >
-            Bot Token
+            Bot token
           </label>
           <div class={tw`flex align-center`}>
             <input
@@ -150,17 +150,14 @@ export default function IndexPage(props: PageProps<Data>) {
         </form>
         <p class={tw`mt-2 text-gray-500`}>
           If you provide one, you can run the examples directly from your
-          browser! You can get one by chatting with the Father of all Telegram
-          bots, the{"  "}
+          browser! You can get one by talking to{"  "}
           <a
             href="https://telegram.me/BotFather"
             class={tw`text-grammy-500 hover:underline`}
           >
-            BotFather
-          </a>{" "}
-          on Telegram.
+            @BotFather
+          </a>.
         </p>
-
         <p class={tw`mt-12 text-gray-500`}>
           <a
             href="https://github.com/dcdunkan/y-by-example"

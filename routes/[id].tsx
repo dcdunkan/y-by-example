@@ -11,6 +11,7 @@ import { CircleArrow } from "../components/Icons.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
 import { CONTENTS } from "../utils/contents.ts";
+import RunButton from "../islands/RunButton.tsx";
 import { VERSIONS } from "../utils/versions.ts";
 
 interface Data {
@@ -170,6 +171,8 @@ export default function ExamplePage(props: PageProps<Data>) {
         <div class={tw`grid grid-cols-1 sm:grid-cols-5 gap-x-6`}>
           <div class={tw`col-span-2 mt-8`} />
           <div class={tw`col-span-3 mt-8`}>
+            <RunButton id={props.params.id} />
+
             {example.deno_cli && (
               <>
                 <p class={tw`text-gray-700`}>
