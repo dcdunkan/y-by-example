@@ -1,8 +1,8 @@
+// This file is generated. Do not edit.
 /**
  * @title Message Formatting
  * @run
  * @deno_cli <url>
- * @resource {https://grammy.dev/plugins/parse-mode} Plugins: Parse Mode
  * @resource {https://grammy.dev/guide/basics.html#sending-message-with-formatting} Docs: Sending Message With Formatting
  * @resource {https://core.telegram.org/bots/api#formatting-options} Bot API Manual: Formatting Options
  *
@@ -39,16 +39,19 @@ bot.command("help", async (ctx) => {
 // There is also Markdown V1.
 // This only exists for backward compatibility.
 // You shouldn't be using this for your bot.
-// But for demonstration purposes, here you go.
+// But for demonstration purposes:
 bot.command("id", async (ctx) => {
   await ctx.reply("`" + ctx.chat.id + "`", {
     parse_mode: "Markdown",
   });
 });
 
-// Start your bot.
-bot.start();
+// Make the bot online.
+// bot.start();
 
 // Now you know how to make your bot's messages look cooler in chats.
-// grammY has an official parse mode plugin which makes your code much cleaner and simplifies the work.
 // Check out the additional resources below for more information related to message formatting.
+// grammY also has an official parse mode plugin which makes your code much cleaner and simplify the work.
+// We'll look into that in a different chapter.
+
+export { bot };

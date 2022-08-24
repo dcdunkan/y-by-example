@@ -12,12 +12,14 @@ export interface Example {
   id: string;
   title: string;
   description: string;
-  additionalResources: [string, string][];
-  run?: string;
-  playground?: string;
-  files: ExampleFile[];
   introduction: string;
+  files: ExampleFile[];
   conclusion: string;
+  additionalResources: [string, string][];
+  run: boolean;
+  deno_cli?: string;
+  deno_pg?: string;
+  stackblitz?: string;
 }
 
 export function parseExample(id: string, file: string): Example {
@@ -25,15 +27,21 @@ export function parseExample(id: string, file: string): Example {
   const [, jsdoc, rest] = file.match(/^\s*\/\*\*(.*?)\*\/\s*(.*)/s) || [];
 
   // Extract the @key value pairs from the JS doc comment
+  let run = false;
   let description = "";
   const kvs: Record<string, string> = {};
   const resources = [];
 
   for (let line of jsdoc.split("\n")) {
     line = line.trim().replace(/^\*/, "").trim();
-    const [, key, value] = line.match(/^\s*@(\w+)\s+(.*)/) || [];
+    const [, key, value] = line.match(/^\s*@(\w+)(?:\s+(.*))?/) || [];
     if (key) {
-      if (key === "resource") {
+      if (kvs[key]) {
+        throw new SyntaxError(`Duplicate '${key}' in example '${id}'`);
+      }
+      if (key === "run") {
+        run = true;
+      } else if (key === "resource") {
         resources.push(value);
       } else {
         kvs[key] = value.trim();
@@ -167,13 +175,15 @@ export function parseExample(id: string, file: string): Example {
 
   return {
     id,
-    title: kvs.title,
     description,
-    additionalResources,
-    run: kvs.run,
-    playground: kvs.playground,
-    files,
     introduction,
+    files,
     conclusion,
+    additionalResources,
+    run,
+    title: kvs.title,
+    deno_cli: kvs.deno_cli,
+    deno_pg: kvs.deno_pg,
+    stackblitz: kvs.stackblitz,
   };
 }

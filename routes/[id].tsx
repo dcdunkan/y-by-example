@@ -7,7 +7,7 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
 import Prism from "prism";
 import "https://esm.sh/prismjs@1.25.0/components/prism-typescript.js?no-check&pin=v55";
-import { CircleArrow, DeployLogo } from "../components/Icons.tsx";
+import { CircleArrow } from "../components/Icons.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
 import { CONTENTS } from "../utils/contents.ts";
@@ -170,7 +170,7 @@ export default function ExamplePage(props: PageProps<Data>) {
         <div class={tw`grid grid-cols-1 sm:grid-cols-5 gap-x-6`}>
           <div class={tw`col-span-2 mt-8`} />
           <div class={tw`col-span-3 mt-8`}>
-            {example.run && (
+            {example.deno_cli && (
               <>
                 <p class={tw`text-gray-700`}>
                   Run{" "}
@@ -185,25 +185,42 @@ export default function ExamplePage(props: PageProps<Data>) {
                 <pre
                   class={tw`mt-2 bg-gray-100 p-4 overflow-x-auto text-sm select-all rounded-md`}
                 >
-                  deno run --allow-net {example.run.replace("<url>", url)}
+                  deno run --allow-net {example.deno_cli.replace("<url>", url)}
                 </pre>
               </>
             )}
 
-            {example.playground && (
+            {example.deno_pg && (
               <div class={tw`col-span-3 mt-8`}>
                 <p class={tw`text-gray-700`}>
                   Try this example in a Deno Deploy playground:
                 </p>
                 <p class={tw`mt-3`}>
                   <a
-                    class={tw`py-2 px-4 bg-black inline-block text-white text-base rounded-md opacity-90 hover:opacity-100`}
-                    href={example.playground}
+                    class={tw`py-2 px-4 border-solid border-2 border-black-500 text-black-500 hover:bg-grammy-500 hover:border-grammy-500 hover:text-white transition ease-in-out duration-250 inline-block text-sm rounded-md opacity-90`}
+                    href={example.deno_pg}
                     target="_blank"
                     rel="noreferrer"
-                    title="Deploy"
                   >
-                    <DeployLogo />
+                    Go to playground
+                  </a>
+                </p>
+              </div>
+            )}
+
+            {example.stackblitz && (
+              <div class={tw`col-span-3 mt-8`}>
+                <p class={tw`text-gray-700`}>
+                  Try this example in Stackblitz:
+                </p>
+                <p class={tw`mt-3`}>
+                  <a
+                    class={tw`py-2 px-4 border-solid border-2 border-black-500 text-black-500 hover:bg-grammy-500 hover:border-grammy-500 hover:text-white transition ease-in-out duration-250 inline-block text-sm rounded-md opacity-90`}
+                    href={example.stackblitz}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open project
                   </a>
                 </p>
               </div>
