@@ -1,13 +1,13 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
 import { Fragment, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
 import { CONTENTS } from "../utils/contents.ts";
 import { Example, parseExample } from "../utils/example.ts";
 import { Footer } from "../components/Footer.tsx";
+import BotTokenInput from "../islands/BotTokenInput.tsx";
 import { GrammyByExample } from "../components/Logos.tsx";
 
 interface Data {
@@ -28,16 +28,6 @@ export const handler: Handlers<Data> = {
 
 export default function IndexPage(props: PageProps<Data>) {
   const { examples } = props.data;
-  const [token, setToken] = useState("");
-
-  useEffect(() => {
-    setToken(localStorage.getItem("token") ?? "");
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("token", token);
-  }, [token]);
-
   return (
     <>
       <Head>
@@ -105,24 +95,13 @@ export default function IndexPage(props: PageProps<Data>) {
           runtime. But by changing the imports here and there, these can easily
           run on Node.js as well.
         </p>
-
-        <form method="POST">
-          <label
-            htmlFor="bot_token"
-            class={tw`block mt-8 mb-2 font-medium text-gray-900`}
-          >
-            Bot token
-          </label>
-          <input
-            type="text"
-            id="bot_token"
-            name="bot_token"
-            class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
-            placeholder="123456:ABCdef"
-            value={token}
-            onChange={(e) => setToken(e.currentTarget.value)}
-          />
-        </form>
+        <label
+          htmlFor="bot_token"
+          class={tw`block mt-8 mb-2 font-medium text-gray-900`}
+        >
+          Bot token
+        </label>
+        <BotTokenInput />
         <p class={tw`mt-2 text-gray-500`}>
           If you provide one, you can run the examples directly from your
           browser! You can get one by talking to{"  "}
