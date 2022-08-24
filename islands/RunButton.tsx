@@ -1,13 +1,13 @@
 /** @jsx h */
-import { h } from "preact";
+/** @jsxFrag Fragment */
+import { h ,Fragment} from "preact";
 import { useEffect, useState } from "preact/hooks";
-import {Start,Stop,Loading} from '../components/Icons.tsx'
+import { Loading, Start, Stop } from "../components/Icons.tsx";
 
 export default function RunButton({ id }: { id: string }) {
-  const [disabled, setDisabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
   const [running, setRunning] = useState(false);
   const [busy, setBusy] = useState(false);
-  const token = () => localStorage.getItem("token");
   // deno-lint-ignore no-explicit-any
   let bot: any;
 
@@ -21,11 +21,6 @@ export default function RunButton({ id }: { id: string }) {
       setRunning(false);
       setBusy(false);
     } else {
-      const url = new URL(`/static/${id}.ts`, location.href);
-      const { getBot } = await import(
-        `https://bundle.deno.dev/${url.toString()}`
-      );
-      const bot = getBot(token());
       bot.start({
         drop_pending_updates: true,
         onStart: () => {
@@ -37,16 +32,25 @@ export default function RunButton({ id }: { id: string }) {
   }
 
   useEffect(() => {
-    if (token()) {
-      setDisabled(false);
-    }
+    (async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const url = new URL(`/static/${id}.ts`, location.href);
+        const { getBot } = await import(
+          `https://bundle.deno.dev/${url.toString()}`
+        );
+        bot = getBot(token)
+        await bot.init()
+        setEnabled(true)
+      }
+    })();
   }, []);
 
   return (
-    <button
-      disabled={disabled || busy}
-      onClick={run} >
+    enabled ? <button
+      onClick={run}
+    >
       {running ? <Stop /> : busy ? <Loading /> : <Start />}
-    </button>
+    </button> : <></> 
   );
 }
