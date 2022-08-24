@@ -25,7 +25,7 @@ export function CircleArrow(props: { right?: boolean }) {
 export function Stop() {
   return (
     <svg
-      width="1rem"
+      width="1em"
       fill="none"
       viewBox="0 0 65 65"
       xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +41,7 @@ export function Stop() {
 export function Start() {
   return (
     <svg
-      width="1rem"
+      width="1em"
       fill="none"
       viewBox="0 0 65 72"
       xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +57,7 @@ export function Start() {
 export function Loading() {
   return (
     <svg
-      width="1rem"
+      width="1em"
       viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
