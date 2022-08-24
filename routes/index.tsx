@@ -1,6 +1,7 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
 import { Fragment, h } from "preact";
+import { useEffect, useState } from "preact/hooks";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
@@ -27,6 +28,15 @@ export const handler: Handlers<Data> = {
 
 export default function IndexPage(props: PageProps<Data>) {
   const { examples } = props.data;
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token") ?? "");
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("token", token);
+  }, [token]);
 
   return (
     <>
@@ -103,21 +113,15 @@ export default function IndexPage(props: PageProps<Data>) {
           >
             Bot token
           </label>
-          <div class={tw`flex align-center`}>
-            <input
-              type="text"
-              id="bot_token"
-              name="bot_token"
-              class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
-              placeholder="123456:ABCdef"
-            />
-            <button
-              type="submit"
-              class={tw`text-white bg-grammy-500 ml-2 hover:bg-grammy-500 focus:ring-4 focus:outline-none focus:ring-grammy-500 rounded-lg w-full sm:w-auto px-5 py-2.5 text-center`}
-            >
-              Save
-            </button>
-          </div>
+          <input
+            type="text"
+            id="bot_token"
+            name="bot_token"
+            class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
+            placeholder="123456:ABCdef"
+            value={token}
+            onChange={(e) => setToken(e.currentTarget.value)}
+          />
         </form>
         <p class={tw`mt-2 text-gray-500`}>
           If you provide one, you can run the examples directly from your
