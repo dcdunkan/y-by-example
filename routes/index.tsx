@@ -15,7 +15,7 @@ interface Data {
 }
 
 export const handler: Handlers<Data> = {
-  async GET(req, ctx) {
+  async GET(_req, ctx) {
     const examples = await Promise.all(
       CONTENTS.map((id) =>
         Deno.readTextFile(`./contents/${id}.ts`)

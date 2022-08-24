@@ -1,6 +1,5 @@
 /** @jsx h */
-/** @jsxFrag Fragment */
-import { Fragment, h } from "preact";
+import {  h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { Loading, Start, Stop } from "../components/Icons.tsx";
 
@@ -8,6 +7,7 @@ export default function RunButton({ id }: { id: string }) {
   const [enabled, setEnabled] = useState(false);
   const [running, setRunning] = useState(false);
   const [busy, setBusy] = useState(false);
+  // deno-lint-ignore no-explicit-any
   const [bot, setBot] = useState<any>(undefined);
 
   async function run() {
@@ -19,7 +19,7 @@ export default function RunButton({ id }: { id: string }) {
     }
     setBusy(true);
     if (running) {
-      bot.stop();
+      await bot.stop();
       setRunning(false);
       setBusy(false);
     } else {

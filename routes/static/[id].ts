@@ -1,6 +1,6 @@
 import { Handler } from "$fresh/server.ts";
 
-export const handler: Handler = async (req, ctx) => {
+export const handler: Handler = async (_req, ctx) => {
   let content = await Deno.readTextFile(`./contents/${ctx.params.id}`);
   const imports = content.split("\n").filter((v) => v.startsWith("import"));
   for (const i of imports) {
