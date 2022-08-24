@@ -1,5 +1,6 @@
 /** @jsx h */
 import { h } from "preact";
+import { tw } from "twind";
 import { useEffect, useState } from "preact/hooks";
 import { Loading, Start, Stop } from "../components/Icons.tsx";
 
@@ -54,6 +55,7 @@ export default function RunButton({ id }: { id: string }) {
 
   return (
     <button
+      class={tw`focus:outline-none`}
       onClick={run}
     >
       {enabled ? running ? <Stop /> : busy ? <Loading /> : <Start /> : ""}
