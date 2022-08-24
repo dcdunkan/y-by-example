@@ -7,7 +7,7 @@ export const handler: Handler = async (_req, ctx) => {
     content = content.replace(i, "");
   }
   content = "function getBot(token: string) {\n" + content;
-  content = content.replace('"<REPLACE_BOT_TOKEN>"', "token");
+  content = content.replace('"BOT_TOKEN"', "token");
   content = content.replace(
     /(\n)(bot\.start\(\);)/,
     "$1// $2",
