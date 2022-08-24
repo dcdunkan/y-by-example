@@ -1,7 +1,6 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
 import { Fragment, h } from "preact";
-import { getCookies } from "std/http/cookie.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
@@ -15,7 +14,6 @@ import RunButton from "../islands/RunButton.tsx";
 import { VERSIONS } from "../utils/versions.ts";
 
 interface Data {
-  token: string;
   example: Example;
   prev: Example | null;
   next: Example | null;
@@ -23,8 +21,6 @@ interface Data {
 
 export const handler: Handlers<Data> = {
   async GET(req, ctx) {
-    const token = getCookies(req.headers)["bot_token"] ?? "";
-
     let id = ctx.params.id;
     let endsWithTS = false;
     if (id.endsWith(".ts")) {
@@ -96,12 +92,12 @@ if (!__BOT_TOKEN__) throw new Error("Invalid bot token.");\n\n`;
     }
 
     // Otherwise, we'll render the example.
-    return ctx.render({ example, prev, next, token });
+    return ctx.render({ example, prev, next });
   },
 };
 
 export default function ExamplePage(props: PageProps<Data>) {
-  const { example, prev, next, token } = props.data;
+  const { example, prev, next } = props.data;
 
   if (!example) {
     return <div>404 Example Not Found</div>;
@@ -154,7 +150,6 @@ export default function ExamplePage(props: PageProps<Data>) {
                 lastOfFile={i === file.snippets.length - 1}
                 filename={file.name}
                 snippet={snippet}
-                token={token}
               />
             ))}
           </div>
@@ -287,11 +282,10 @@ function SnippetComponent(props: {
   firstOfFile: boolean;
   lastOfFile: boolean;
   snippet: ExampleSnippet;
-  token: string;
 }) {
   props.snippet.code = props.snippet.code.replace(
     /<REPLACE_BOT_TOKEN>/g,
-    props.token || "BOT_TOKEN",
+    "BOT_TOKEN",
   );
 
   // TODO: replacing for all modules.

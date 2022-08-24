@@ -3,7 +3,6 @@
 import { Fragment, h } from "preact";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { getCookies, setCookie } from "std/http/cookie.ts";
 import { tw } from "@twind";
 import { CONTENTS } from "../utils/contents.ts";
 import { Example, parseExample } from "../utils/example.ts";
@@ -12,7 +11,6 @@ import { GrammyByExample } from "../components/Logos.tsx";
 
 interface Data {
   examples: Example[];
-  token: string;
 }
 
 export const handler: Handlers<Data> = {
@@ -23,38 +21,12 @@ export const handler: Handlers<Data> = {
           .then((text) => parseExample(id, text))
       ),
     );
-
-    const token = getCookies(req.headers)["bot_token"] ?? "";
-    return ctx.render({ examples, token });
-  },
-  async POST(req, ctx) {
-    const examples = await Promise.all(
-      CONTENTS.map((id) =>
-        Deno.readTextFile(`./contents/${id}.ts`)
-          .then((text) => parseExample(id, text))
-      ),
-    );
-
-    const token = (await req.formData()).get("bot_token");
-
-    if (token) {
-      const response = await ctx.render({ examples, token: token.toString() });
-      setCookie(response.headers, {
-        name: "bot_token",
-        value: token.toString(),
-      });
-      return response;
-    }
-
-    return new Response(undefined, {
-      headers: { location: `/` },
-      status: 200,
-    });
+    return ctx.render({ examples });
   },
 };
 
 export default function IndexPage(props: PageProps<Data>) {
-  const { examples, token } = props.data;
+  const { examples } = props.data;
 
   return (
     <>
@@ -138,7 +110,6 @@ export default function IndexPage(props: PageProps<Data>) {
               name="bot_token"
               class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
               placeholder="123456:ABCdef"
-              value={token}
             />
             <button
               type="submit"

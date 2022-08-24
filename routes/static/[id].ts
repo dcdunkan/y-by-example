@@ -1,5 +1,4 @@
 import { Handler } from "$fresh/server.ts";
-import { getCookies } from "std/http/cookie.ts";
 
 export const handler: Handler = async (req, ctx) => {
   let content = await Deno.readTextFile(`./contents/${ctx.params.id}`);

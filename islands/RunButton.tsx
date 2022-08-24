@@ -6,10 +6,7 @@ import { tw } from "twind";
 export default function RunButton({ id }: { id: string }) {
   const [disabled, setDisabled] = useState(true);
   const [running, setRunning] = useState(false);
-  const botToken = () =>
-    Object.fromEntries(
-      document.cookie.split(";").map((v) => v).map((v) => v.split("=")),
-    ).bot_token;
+  const token = () => localStorage.getItem("token");
   // deno-lint-ignore no-explicit-any
   let bot: any;
   let busy = false;
@@ -24,7 +21,7 @@ export default function RunButton({ id }: { id: string }) {
       const { getBot } = await import(
         `https://bundle.deno.dev/${url.toString()}`
       );
-      const bot = getBot(botToken());
+      const bot = getBot(token());
       bot.start({
         drop_pending_updates: true,
         onStart: () => {
@@ -40,7 +37,7 @@ export default function RunButton({ id }: { id: string }) {
   }
 
   useEffect(() => {
-    if (botToken()) {
+    if (token()) {
       setDisabled(false);
     }
   }, []);
