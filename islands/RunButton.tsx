@@ -17,6 +17,10 @@ export default function RunButton({ id }: { id: string }) {
     }
     busy = true;
     if (running) {
+      bot.stop();
+      setRunning(false);
+      busy = false;
+    } else {
       const url = new URL(`/static/${id}.ts`, location.href);
       const { getBot } = await import(
         `https://bundle.deno.dev/${url.toString()}`
@@ -29,10 +33,6 @@ export default function RunButton({ id }: { id: string }) {
           setRunning(true);
         },
       });
-    } else {
-      bot.stop();
-      setRunning(false);
-      busy = false;
     }
   }
 
