@@ -16,7 +16,7 @@ import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";
 //- import { Bot } from "grammy"; // Node.js
 
 // Now create an instance of the bot using your Bot Token.
-const bot = new Bot("<REPLACE_BOT_TOKEN>");
+const bot = new Bot("BOT_TOKEN");
 
 // We need the bot to reply "Hello, World!" to any incoming message.
 // To achieve this, we have to register a message handler to the bot.
