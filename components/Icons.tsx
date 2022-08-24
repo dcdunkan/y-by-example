@@ -21,3 +21,61 @@ export function CircleArrow(props: { right?: boolean }) {
     </svg>
   );
 }
+
+export function Stop() {
+  return (
+    <svg
+      width="1rem"
+      fill="none"
+      viewBox="0 0 65 65"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M0 20C0 8.954 8.954 0 20 0h25c11.046 0 20 8.954 20 20v25c0 11.046-8.954 20-20 20H20C8.954 65 0 56.046 0 45V20Z"
+        fill="#000"
+      />
+    </svg>
+  );
+}
+
+export function Start() {
+  return (
+    <svg
+      width="1rem"
+      fill="none"
+      viewBox="0 0 65 72"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M60 27.335c6.667 3.85 6.667 13.472 0 17.32L15 70.638c-6.667 3.849-15-.963-15-8.66V10.014c0-7.698 8.333-12.51 15-8.66l45 25.98Z"
+        fill="#000"
+      />
+    </svg>
+  );
+}
+
+export function Loading() {
+  return (
+    <svg
+      width="1rem"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M100 50C100 22.3913 77.6087 0 50 0C22.3913 0 0 22.3913 0 50M8.47826 50C8.47826 27.1739 26.9565 8.47826 50 8.47826C73.0435 8.47826 91.5217 27.1739 91.5217 50"
+        fill="black"
+      >
+        <animateTransform
+          attributeName="transform"
+          attributeType="XML"
+          type="rotate"
+          dur="1s"
+          from="0 50 50"
+          to="360 50 50"
+          repeatCount="indefinite"
+        />
+      </path>
+    </svg>
+  );
+}

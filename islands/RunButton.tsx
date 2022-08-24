@@ -1,7 +1,7 @@
 /** @jsx h */
 import { h } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { tw } from "twind";
+import {Start,Stop,Loading} from '../components/Icons.tsx'
 
 export default function RunButton({ id }: { id: string }) {
   const [disabled, setDisabled] = useState(true);
@@ -15,11 +15,11 @@ export default function RunButton({ id }: { id: string }) {
     if (busy) {
       return;
     }
-    setBusy(true)
+    setBusy(true);
     if (running) {
       bot.stop();
       setRunning(false);
-      setBusy(false)
+      setBusy(false);
     } else {
       const url = new URL(`/static/${id}.ts`, location.href);
       const { getBot } = await import(
@@ -29,7 +29,7 @@ export default function RunButton({ id }: { id: string }) {
       bot.start({
         drop_pending_updates: true,
         onStart: () => {
-          setBusy(false)
+          setBusy(false);
           setRunning(true);
         },
       });
@@ -45,10 +45,8 @@ export default function RunButton({ id }: { id: string }) {
   return (
     <button
       disabled={disabled || busy}
-      onClick={run}
-      class={tw`text-white bg-grammy-500 ml-2 hover:bg-grammy-500 focus:ring-4 focus:outline-none focus:ring-grammy-500 rounded-lg w-full sm:w-auto px-5 py-2.5 text-center`}
-    >
-      {running ? "Running" : busy ? "..." : "Run"}
+      onClick={run} >
+      {running ? <Stop /> : busy ? <Loading /> : <Start />}
     </button>
   );
 }

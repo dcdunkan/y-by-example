@@ -6,7 +6,7 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
 import Prism from "prism";
 import "https://esm.sh/prismjs@1.25.0/components/prism-typescript.js?no-check&pin=v55";
-import { CircleArrow } from "../components/Icons.tsx";
+import { CircleArrow, Loading, Start } from "../components/Icons.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
 import { CONTENTS } from "../utils/contents.ts";
@@ -123,7 +123,12 @@ export default function ExamplePage(props: PageProps<Data>) {
           {" /"}
         </h4>
 
-        <h1 class={tw`mt-2 text-3xl font-bold`}>{example.title}</h1>
+        <div class={tw`flex items-center gap-2.5`}>
+          <h1 class={tw`mt-2 text-3xl font-bold`}>
+            {example.title}
+          </h1>
+          <RunButton id={props.params.id} />
+        </div>
 
         {example.description && (
           <div class={tw`mt-1`}>
@@ -166,8 +171,6 @@ export default function ExamplePage(props: PageProps<Data>) {
         <div class={tw`grid grid-cols-1 sm:grid-cols-5 gap-x-6`}>
           <div class={tw`col-span-2 mt-8`} />
           <div class={tw`col-span-3 mt-8`}>
-            <RunButton id={props.params.id} />
-
             {example.deno_cli && (
               <>
                 <p class={tw`text-gray-700`}>
