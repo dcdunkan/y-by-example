@@ -12,7 +12,7 @@
 
 // Lets setup the bot as we seen in the Hello World example.
 import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";
-const bot = new Bot("<REPLACE_BOT_TOKEN>");
+const bot = new Bot("BOT_TOKEN");
 
 // There are three "standard" commands: start, help, and settings.
 // Official Telegram clients even provides buttons just to send these commands.

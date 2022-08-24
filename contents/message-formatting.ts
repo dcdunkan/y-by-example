@@ -15,12 +15,12 @@
 import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";
 
 // Next step: create an instance of the bot using your Bot Token.
-const bot = new Bot("<REPLACE_BOT_TOKEN>");
+const bot = new Bot("BOT_TOKEN");
 
 // Lets say a bold hello to the user, when they use the `/start` command.
 // We're using "MarkdownV2" parse mode for it.
 bot.command("start", async (ctx) => {
-  await ctx.reply("*Hello there!*", {
+  await ctx.reply("*Hello there\!*", {
     parse_mode: "MarkdownV2",
   });
 });
