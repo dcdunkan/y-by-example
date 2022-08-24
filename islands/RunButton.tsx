@@ -40,10 +40,7 @@ export default function RunButton({ id }: { id: string }) {
     (async () => {
       const token = localStorage.getItem("token");
       if (token) {
-        const url = new URL(
-          `/static/${id}.ts`,
-          "https://yex-svk7enm6fy5g.deno.dev",
-        );
+        const url = new URL(`/static/${id}.ts`, location.href);
         const { getBot } = await import(
           `https://bundle.deno.dev/${url.toString()}`
         );
