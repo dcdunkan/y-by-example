@@ -6,20 +6,20 @@ import { tw } from "twind";
 export default function RunButton({ id }: { id: string }) {
   const [disabled, setDisabled] = useState(true);
   const [running, setRunning] = useState(false);
+  const [busy, setBusy] = useState(false);
   const token = () => localStorage.getItem("token");
   // deno-lint-ignore no-explicit-any
   let bot: any;
-  let busy = false;
 
   async function run() {
     if (busy) {
       return;
     }
-    busy = true;
+    setBusy(true)
     if (running) {
       bot.stop();
       setRunning(false);
-      busy = false;
+      setBusy(false)
     } else {
       const url = new URL(`/static/${id}.ts`, location.href);
       const { getBot } = await import(
@@ -29,7 +29,7 @@ export default function RunButton({ id }: { id: string }) {
       bot.start({
         drop_pending_updates: true,
         onStart: () => {
-          busy = false;
+          setBusy(false)
           setRunning(true);
         },
       });
