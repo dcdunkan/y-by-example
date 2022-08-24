@@ -20,7 +20,7 @@ const bot = new Bot("BOT_TOKEN");
 // Lets say a bold hello to the user, when they use the `/start` command.
 // We're using "MarkdownV2" parse mode for it.
 bot.command("start", async (ctx) => {
-  await ctx.reply("*Hello there!*", {
+  await ctx.reply("*Hello there\!*", {
     parse_mode: "MarkdownV2",
   });
 });
