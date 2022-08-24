@@ -16,7 +16,7 @@ export default function BotTokenInput() {
 
   return (
     <input
-      type="text"
+      type="password"
       id="bot_token"
       name="bot_token"
       class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}

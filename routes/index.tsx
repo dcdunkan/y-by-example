@@ -9,6 +9,7 @@ import { Example, parseExample } from "../utils/example.ts";
 import { Footer } from "../components/Footer.tsx";
 import BotTokenInput from "../islands/BotTokenInput.tsx";
 import { GrammyByExample } from "../components/Logos.tsx";
+import { Start } from "../components/Icons.tsx";
 
 interface Data {
   examples: Example[];
@@ -103,8 +104,8 @@ export default function IndexPage(props: PageProps<Data>) {
         </label>
         <BotTokenInput />
         <p class={tw`mt-2 text-gray-500`}>
-          If you provide one, you can run the examples directly from your
-          browser! You can get one by talking to{"  "}
+          If you provide a bot token, you will be able to run the examples
+          directly from your browser. You can get one by talking to{"  "}
           <a
             href="https://telegram.me/BotFather"
             class={tw`text-grammy-500 hover:underline`}
