@@ -20,7 +20,7 @@ interface Data {
 }
 
 export const handler: Handlers<Data> = {
-  async GET(req, ctx) {
+  async GET(_req, ctx) {
     let id = ctx.params.id;
     let endsWithTS = false;
     if (id.endsWith(".ts")) {
@@ -106,7 +106,7 @@ export default function ExamplePage(props: PageProps<Data>) {
   const url = `${props.url.origin}${props.url.pathname}.ts`;
 
   const description = (example.description || example.title) +
-    " -- grammY by example is a collection of annotated examples to help beginners to get started with grammY, and the various features and plugins that comes with it.";
+    " — grammY by example is a collection of annotated examples to help beginners get started with grammY, and the various features and plugins that comes with it.";
 
   return (
     <>
@@ -286,11 +286,6 @@ function SnippetComponent(props: {
   lastOfFile: boolean;
   snippet: ExampleSnippet;
 }) {
-  props.snippet.code = props.snippet.code.replace(
-    /<REPLACE_BOT_TOKEN>/g,
-    "BOT_TOKEN",
-  );
-
   // TODO: replacing for all modules.
   props.snippet.code = props.snippet.code.replace(
     /https:\/\/deno\.land\/x\/grammy(@\d.\d.\d|)\/(.+)/g,
