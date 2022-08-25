@@ -226,7 +226,7 @@ export default function ExamplePage(props: PageProps<Data>) {
                 </p>
               </div>
             )}
-
+            
             {example.additionalResources.length > 0 && (
               <div class={tw`col-span-3 mt-12 pt-6 border-t-1 border-gray-200`}>
                 <p class={tw`text-gray-500`}>
@@ -251,13 +251,13 @@ export default function ExamplePage(props: PageProps<Data>) {
             )}
           </div>
         </div>
-
+        
         <div class={tw`col-span-2 mt-12 flex justify-between h-14`}>
           {prev
             ? (
               <a
                 href={`/${prev.id}`}
-                class={tw`w-6/12 text-gray-600 flex items-center gap-3 lg:gap-2 :hover:text-gray-900`}
+                class={tw`w-6/12 text-gray-600 flex items-center gap-3 lg:gap-2 hover:text-gray-900`}
               >
                 <CircleArrow />
                 {prev.title}
@@ -267,7 +267,7 @@ export default function ExamplePage(props: PageProps<Data>) {
           {next && (
             <a
               href={`/${next.id}`}
-              class={tw`w-6/12 text-gray-600 text-right flex items-center justify-end gap-3 lg:gap-2 :hover:text-gray-900`}
+              class={tw`w-6/12 text-gray-600 text-right flex items-center justify-end gap-3 lg:gap-2 hover:text-gray-900`}
             >
               {next.title}
               <CircleArrow right />
