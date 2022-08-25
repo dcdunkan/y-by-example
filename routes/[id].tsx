@@ -76,7 +76,7 @@ if (!__BOT_TOKEN__) throw new Error("Invalid bot token.");\n\n`;
         code += snippet.code + "\n";
       }
 
-      code = code.replace(/"<REPLACE_BOT_TOKEN>"/g, "__BOT_TOKEN__");
+      code = code.replace(/"BOT_TOKEN"/g, "__BOT_TOKEN__");
       code = code.replace(
         /https:\/\/deno\.land\/x\/grammy(|@v\d+.\d+.\d+)\/(.+)/g,
         `https://deno.land/x/grammy@${VERSIONS.grammy}/$2`,
