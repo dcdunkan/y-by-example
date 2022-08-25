@@ -76,6 +76,7 @@ export default function BotTokenInput() {
           class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
           placeholder="123456:ABCdef"
           value={inputToken}
+          autoComplete="off"
           onChange={(e) => setInputToken(e.currentTarget.value)}
         />
         <button
