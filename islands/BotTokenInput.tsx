@@ -11,14 +11,17 @@ export default function BotTokenInput() {
   const [text, setText] = useState("Bot token");
   const [inputToken, setInputToken] = useState("");
 
-  async function getBot(token: string) {
-    const { getBot } = await import(
-      `https://bundle.deno.dev/${new URL(
-        "/static/hello-world.ts",
-        location.href,
-      )}`
-    );
-    return getBot(token);
+  async function getMe(token: string) {
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+      if (res.status == 200) {
+        const { result } = await res.json();
+        return result.username;
+      }
+    } catch (_err) {
+      //
+    }
+    return "";
   }
 
   useEffect(() => {
@@ -28,11 +31,10 @@ export default function BotTokenInput() {
       if (token) {
         setToken(token);
         setInputToken(token);
-        const bot = await getBot(token);
-        try {
-          await bot.init();
-          setText(`Authorized as @${bot.me.username}`);
-        } catch (_err) {
+        const username = await getMe(token)
+        if (username) {
+          setText(`Authorized as @${username}`);
+        } else {
           setText("Invalid token");
         }
       }
@@ -50,12 +52,11 @@ export default function BotTokenInput() {
       if (!inputToken) {
         return;
       }
-      const bot = await getBot(inputToken);
-      try {
-        await bot.init();
+      const username = await getMe(token)
+      if (username) {
         setToken(inputToken);
-        setText(`Authorized as @${bot.me.username}.`);
-      } catch (_err) {
+        setText(`Authorized as @${username}`);
+      } else {
         setText("Invalid token");
       }
       setBusy(false);
