@@ -96,12 +96,6 @@ export default function IndexPage(props: PageProps<Data>) {
           runtime. But by changing the imports here and there, these can easily
           run on Node.js as well.
         </p>
-        <label
-          htmlFor="bot_token"
-          class={tw`block mt-8 mb-2 font-medium text-gray-900`}
-        >
-          Bot token
-        </label>
         <BotTokenInput />
         <p class={tw`mt-2 text-gray-500`}>
           If you provide a bot token, you will be able to run the examples
