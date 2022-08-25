@@ -20,7 +20,7 @@ export default function App({ Component }: AppProps) {
           rel="stylesheet"
         />
       </Head>
-      <body class={tw`font-sans`}>
+      <body class={tw`font-sans dark:(bg-[#22272e] text-white)`}>
         <Component />
       </body>
     </>

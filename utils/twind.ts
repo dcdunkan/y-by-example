@@ -1,10 +1,10 @@
 import { IS_BROWSER } from "$fresh/runtime.ts";
-import { Configuration, setup } from "twind";
+import { apply, Configuration, setup } from "twind";
 
 export * from "twind";
 
 export const config: Configuration = {
-  darkMode: "class",
+  darkMode: "media",
   mode: "silent",
   theme: {
     extend: {
@@ -18,6 +18,11 @@ export const config: Configuration = {
         },
       },
     },
+  },
+  plugins: {
+    link: apply`text-grammy-500 hover:underline`,
+    awht: { fill: "#eeeeee"},
+    wht: { fill: "#ffffff", "stop-color": "#ffffff" },
   },
 };
 

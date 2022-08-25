@@ -41,24 +41,24 @@ export default function IndexPage(props: PageProps<Data>) {
 
       <main class={tw`mt-10 p-4 mx-auto max-w-screen-md`}>
         <GrammyByExample />
-        <p class={tw`mt-8 text-gray-900`}>
+        <p class={tw`mt-8`}>
           <a
             href="https://grammy.dev"
-            class={tw`text-grammy-500 hover:underline`}
+            class={tw`link`}
           >
             grammY
           </a>{" "}
           is a framework for creating Telegram bots. It can be used from
           TypeScript and JavaScript and runs on both Deno and Node.js.
         </p>
-        <p class={tw`mt-6 text-gray-900`}>
+        <p class={tw`mt-6`}>
           grammY by example is a collection of annotated examples to help
           beginners get started with grammY, know about its various features and
           plugins available for it. If you're looking for a well-explained and
           complete guide, see the{" "}
           <a
             href="https://grammy.dev"
-            class={tw`text-grammy-500 hover:underline`}
+            class={tw`link`}
           >
             documentation
           </a>.
@@ -69,26 +69,26 @@ export default function IndexPage(props: PageProps<Data>) {
             <li class={tw`py-2`}>
               <a
                 href={`/${example.id}`}
-                class={tw`transition ease-in-out delay-50 hover:text-grammy-500 text-gray-900`}
+                class={tw`transition ease-in-out delay-50 hover:text-grammy-500`}
               >
                 <p class={tw`font-medium`}>{example.title}</p>
-                <p class={tw`text-gray-500`}>{example.description}</p>
+                <p class={tw`text-gray-500 dark:text-gray-400`}>{example.description}</p>
               </a>
             </li>
           ))}
         </ul>
 
-        <p class={tw`mt-6 text-gray-900`}>
+        <p class={tw`mt-6`}>
           Bots can be written in either JavaScript or TypeScript. All code in
           these examples is written in TypeScript, but all the examples also
           work in JavaScript.
         </p>
 
-        <p class={tw`mt-6 text-gray-900`}>
+        <p class={tw`mt-6`}>
           As mentioned, grammY is powerful enough to run on Deno, Node and
           browser. All these example are written for the{" "}
           <a
-            class={tw`text-grammy-500 hover:underline`}
+            class={tw`link`}
             href="https://deno.land"
           >
             Deno
@@ -97,17 +97,17 @@ export default function IndexPage(props: PageProps<Data>) {
           run on Node.js as well.
         </p>
         <BotTokenInput />
-        <p class={tw`mt-2 text-gray-500`}>
+        <p class={tw`mt-2 text-gray-500 dark:text-gray-400`}>
           If you provide a bot token, you will be able to run the examples
           directly from your browser. You can get one by talking to{"  "}
           <a
             href="https://telegram.me/BotFather"
-            class={tw`text-grammy-500 hover:underline`}
+            class={tw`link`}
           >
             @BotFather
           </a>.
         </p>
-        <p class={tw`mt-12 text-gray-500`}>
+        <p class={tw`mt-12 text-gray-500 dark:text-gray-400`}>
           <a
             href="https://github.com/dcdunkan/y-by-example"
             class={tw`underline hover:text-grammy-500`}

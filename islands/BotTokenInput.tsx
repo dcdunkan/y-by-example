@@ -69,7 +69,7 @@ export default function BotTokenInput() {
       <label
         htmlFor="bot_token"
         class={tw`block font-medium h-4 ${
-          text.startsWith("Invalid") ? tw`text-red-500` : tw`text-gray-900`
+          text.startsWith("Invalid") ? tw`text-red-500` : ''
         }`}
       >
         {busy ? <Loading /> : text}
@@ -79,7 +79,7 @@ export default function BotTokenInput() {
           type="password"
           id="bot_token"
           name="bot_token"
-          class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
+          class={tw`bg-gray-50 dark:bg-gray-800 border focus:outline-none dark:text-gray-100 border-gray-300 dark:border-gray-700 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
           placeholder="123456:ABCdef"
           value={inputToken}
           autoComplete="off"
