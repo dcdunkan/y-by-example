@@ -35,7 +35,7 @@ export default function BotTokenInput() {
         setInputToken(token);
         const username = await getMe(token);
         if (username) {
-          setText(`Authorized as @${username}`);
+          setText(`Authorized as @${username}.`);
         } else {
           setText("Invalid token");
         }
@@ -68,7 +68,13 @@ export default function BotTokenInput() {
     <div class={tw`flex flex-col mt-8 gap-4`}>
       <label
         htmlFor="bot_token"
-        class={tw`block font-medium text-gray-900 h-4`}
+        class={tw`block font-medium h-4 ${
+          text != "Bot token"
+            ? text.startsWith("Invalid")
+              ? tw`text-red-500`
+              : tw`text-grammy-500`
+            : tw`text-gray-900`
+        }`}
       >
         {busy ? <Loading /> : text}
       </label>
