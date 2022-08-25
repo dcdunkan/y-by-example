@@ -1,11 +1,13 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
-import { Fragment, h } from "preact";
+import { h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { tw } from "twind";
+import { Loading } from "../components/Icons.tsx";
 
 export default function BotTokenInput() {
   const [token, setToken] = useState("");
+  const [busy, setBusy] = useState(false);
   const [text, setText] = useState("Bot token");
   const [inputToken, setInputToken] = useState("");
   async function getBot(token: string) {
@@ -20,6 +22,7 @@ export default function BotTokenInput() {
 
   useEffect(() => {
     (async () => {
+      setBusy(true);
       const token = localStorage.getItem("token");
       if (token) {
         const bot = await getBot(token);
@@ -31,6 +34,7 @@ export default function BotTokenInput() {
           localStorage.removeItem("token");
         }
       }
+      setBusy(false);
     })();
   }, []);
 
@@ -40,6 +44,7 @@ export default function BotTokenInput() {
 
   function set() {
     (async () => {
+      setBusy(true);
       if (!inputToken) {
         return;
       }
@@ -51,6 +56,7 @@ export default function BotTokenInput() {
       } catch (_err) {
         //
       }
+      setBusy(false);
     })();
   }
 
@@ -60,7 +66,7 @@ export default function BotTokenInput() {
         htmlFor="bot_token"
         class={tw`block font-medium text-gray-900`}
       >
-        {text}
+        {busy ? <Loading /> : text}
       </label>
       <div class={tw`flex gap-2.5`}>
         <input
