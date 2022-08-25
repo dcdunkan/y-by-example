@@ -10,6 +10,7 @@ export default function BotTokenInput() {
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState("Bot token");
   const [inputToken, setInputToken] = useState("");
+
   async function getBot(token: string) {
     const { getBot } = await import(
       `https://bundle.deno.dev/${new URL(
@@ -25,6 +26,7 @@ export default function BotTokenInput() {
       setBusy(true);
       const token = localStorage.getItem("token");
       if (token) {
+        setToken(token);
         setInputToken(token);
         const bot = await getBot(token);
         try {
