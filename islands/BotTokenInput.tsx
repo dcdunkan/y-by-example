@@ -25,13 +25,13 @@ export default function BotTokenInput() {
       setBusy(true);
       const token = localStorage.getItem("token");
       if (token) {
+        setInputToken(token);
         const bot = await getBot(token);
         try {
           await bot.init();
-          setInputToken(token);
           setText(`Authorized as @${bot.me.username}`);
         } catch (_err) {
-          localStorage.removeItem("token");
+          setText("Invalid token");
         }
       }
       setBusy(false);
