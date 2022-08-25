@@ -69,11 +69,7 @@ export default function BotTokenInput() {
       <label
         htmlFor="bot_token"
         class={tw`block font-medium h-4 ${
-          text != "Bot token"
-            ? text.startsWith("Invalid")
-              ? tw`text-red-500`
-              : tw`text-grammy-500`
-            : tw`text-gray-900`
+          text.startsWith("Invalid") ? tw`text-red-500` : tw`text-gray-900`
         }`}
       >
         {busy ? <Loading /> : text}
