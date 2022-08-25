@@ -52,9 +52,9 @@ export default function BotTokenInput() {
       try {
         await bot.init();
         setToken(inputToken);
-        setText(`Authorized as @${bot.me.username}`);
+        setText(`Authorized as @${bot.me.username}.`);
       } catch (_err) {
-        //
+        setText("Invalid token");
       }
       setBusy(false);
     })();
@@ -64,7 +64,7 @@ export default function BotTokenInput() {
     <div class={tw`flex flex-col mt-8 gap-2.5`}>
       <label
         htmlFor="bot_token"
-        class={tw`block font-medium text-gray-900`}
+        class={tw`block font-medium text-gray-900 h-4`}
       >
         {busy ? <Loading /> : text}
       </label>
