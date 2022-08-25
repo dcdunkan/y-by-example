@@ -61,7 +61,7 @@ export default function BotTokenInput() {
   }
 
   return (
-    <div class={tw`flex flex-col mt-8 gap-2.5`}>
+    <div class={tw`flex flex-col mt-8 gap-4`}>
       <label
         htmlFor="bot_token"
         class={tw`block font-medium text-gray-900 h-4`}
