@@ -14,8 +14,10 @@ export default function BotTokenInput() {
   async function getMe(token: string) {
     try {
       const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+      console.log(res.status);
       if (res.status == 200) {
         const { result } = await res.json();
+        console.log(result);
         return result.username;
       }
     } catch (_err) {
@@ -31,7 +33,7 @@ export default function BotTokenInput() {
       if (token) {
         setToken(token);
         setInputToken(token);
-        const username = await getMe(token)
+        const username = await getMe(token);
         if (username) {
           setText(`Authorized as @${username}`);
         } else {
@@ -49,15 +51,14 @@ export default function BotTokenInput() {
   function set() {
     (async () => {
       setBusy(true);
-      if (!inputToken) {
-        return;
-      }
-      const username = await getMe(token)
-      if (username) {
-        setToken(inputToken);
-        setText(`Authorized as @${username}`);
-      } else {
-        setText("Invalid token");
+      if (inputToken) {
+        const username = await getMe(inputToken);
+        if (username) {
+          setToken(inputToken);
+          setText(`Authorized as @${username}`);
+        } else {
+          setText("Invalid token");
+        }
       }
       setBusy(false);
     })();

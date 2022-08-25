@@ -3,7 +3,7 @@
 import { Fragment, h } from "preact";
 import { AppProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import {tw } from 'twind';
+import { tw } from "twind";
 
 export default function App({ Component }: AppProps) {
   return (
@@ -21,7 +21,7 @@ export default function App({ Component }: AppProps) {
         />
       </Head>
       <body class={tw`font-sans`}>
-      <Component />
+        <Component />
       </body>
     </>
   );
