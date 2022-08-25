@@ -20,7 +20,7 @@ interface Data {
 }
 
 export const handler: Handlers<Data> = {
-  async GET(_req, ctx) {
+  async GET(req, ctx) {
     let id = ctx.params.id;
     let endsWithTS = false;
     if (id.endsWith(".ts")) {
