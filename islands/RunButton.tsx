@@ -2,7 +2,7 @@
 import { h } from "preact";
 import { tw } from "twind";
 import { useEffect, useState } from "preact/hooks";
-import { Loading, Start, Stop } from "../components/Icons.tsx";
+import { Info, Loading, Start, Stop } from "../components/Icons.tsx";
 
 export default function RunButton({ id }: { id: string }) {
   const [enabled, setEnabled] = useState(false);
@@ -10,12 +10,15 @@ export default function RunButton({ id }: { id: string }) {
   const [busy, setBusy] = useState(false);
   // deno-lint-ignore no-explicit-any
   const [bot, setBot] = useState<any>(undefined);
+  const [title, setTitle] = useState("");
 
   async function run() {
     if (!bot) {
+      setTitle("You can't run this example");
       return;
     }
     if (busy) {
+      setTitle("Loading...");
       return;
     }
     setBusy(true);
@@ -23,16 +26,19 @@ export default function RunButton({ id }: { id: string }) {
       await bot.stop();
       setRunning(false);
       setBusy(false);
+      setTitle("Click to run the example");
     } else {
       bot.start({
         drop_pending_updates: true,
-        onStart: () => {
+        onStart: ({ username }: { username: string }) => {
           setBusy(false);
           setRunning(true);
+          setTitle(`Live at @${username}. Click to stop.`);
         },
       }).catch(() => {
         setBusy(false);
         setRunning(true);
+        setTitle("Error occurred while running");
       });
     }
   }
@@ -49,6 +55,9 @@ export default function RunButton({ id }: { id: string }) {
         await bot.init();
         setBot(bot);
         setEnabled(true);
+        setTitle("Click to run the example");
+      } else {
+        setTitle("No bot token set");
       }
     })();
   }, []);
@@ -57,8 +66,9 @@ export default function RunButton({ id }: { id: string }) {
     <button
       class={tw`focus:outline-none`}
       onClick={run}
+      title={title}
     >
-      {enabled ? running ? <Stop /> : busy ? <Loading /> : <Start /> : ""}
+      {enabled ? running ? <Stop /> : busy ? <Loading /> : <Start /> : <Info />}
     </button>
   );
 }
