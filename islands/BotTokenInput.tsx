@@ -1,9 +1,10 @@
 /** @jsx h */
-/** @jsxFrag Fragment */
 import { h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { tw } from "twind";
 import { Loading } from "../components/Icons.tsx";
+
+const VALID_TOKEN = /^[0-9]{8,10}:[a-zA-Z0-9_-]{35}$/g;
 
 export default function BotTokenInput() {
   const [token, setToken] = useState("");
@@ -14,10 +15,8 @@ export default function BotTokenInput() {
   async function getMe(token: string) {
     try {
       const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
-      console.log(res.status);
       if (res.status == 200) {
         const { result } = await res.json();
-        console.log(result);
         return result.username;
       }
     } catch (_err) {
@@ -48,14 +47,21 @@ export default function BotTokenInput() {
     localStorage.setItem("token", token);
   }, [token]);
 
-  function set() {
+  function set(input: string) {
     (async () => {
       setBusy(true);
-      if (inputToken) {
-        const username = await getMe(inputToken);
+      setInputToken(input);
+      if (!input) {
+        // Allow users to clear token by clearing the input.
+        setText("Bot token");
+        setToken("");
+      } else if (!VALID_TOKEN.test(input)) {
+        setText("Invalid token");
+      } else {
+        const username = await getMe(input);
         if (username) {
-          setToken(inputToken);
-          setText(`Authorized as @${username}`);
+          setToken(input);
+          setText(`Authorized as @${username}.`);
         } else {
           setText("Invalid token");
         }
@@ -74,24 +80,16 @@ export default function BotTokenInput() {
       >
         {busy ? <Loading /> : text}
       </label>
-      <div class={tw`flex gap-2.5`}>
-        <input
-          type="password"
-          id="bot_token"
-          name="bot_token"
-          class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
-          placeholder="123456:ABCdef"
-          value={inputToken}
-          autoComplete="off"
-          onChange={(e) => setInputToken(e.currentTarget.value)}
-        />
-        <button
-          class={tw`bg-grammy-500 px-5 py-2 text-white rounded-lg hover:bg-grammy-400`}
-          onClick={set}
-        >
-          Set
-        </button>
-      </div>
+      <input
+        type="password"
+        id="bot_token"
+        name="bot_token"
+        class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
+        placeholder="123456:ABCdef"
+        value={inputToken}
+        autoComplete="off"
+        onInput={(e) => set(e.currentTarget.value)}
+      />
     </div>
   );
 }
