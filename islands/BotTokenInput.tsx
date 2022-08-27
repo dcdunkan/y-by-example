@@ -4,7 +4,7 @@ import { useEffect, useState } from "preact/hooks";
 import { tw } from "twind";
 import { Loading } from "../components/Icons.tsx";
 
-const VALID_TOKEN = /^[0-9]{8,10}:[a-zA-Z0-9_-]{35}$/g;
+const VALID_TOKEN = /^[0-9]{8,10}:[a-zA-Z0-9_-]{35}$/;
 
 export default function BotTokenInput() {
   const [token, setToken] = useState("");
