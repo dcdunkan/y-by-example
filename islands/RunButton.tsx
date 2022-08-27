@@ -45,6 +45,7 @@ export default function RunButton({ id }: { id: string }) {
 
   useEffect(() => {
     (async () => {
+      setTitle("Loading...");
       const token = localStorage.getItem("token");
       if (token) {
         const url = new URL(`/static/${id}.ts`, location.href);
