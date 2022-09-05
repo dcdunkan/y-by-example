@@ -6,7 +6,6 @@ import * as $0 from "./routes/[id].tsx";
 import * as $1 from "./routes/_app.tsx";
 import * as $2 from "./routes/gfm.css.ts";
 import * as $3 from "./routes/index.tsx";
-import * as $4 from "./routes/static/[id].ts";
 import * as $$0 from "./islands/BotTokenInput.tsx";
 import * as $$1 from "./islands/RunButton.tsx";
 
@@ -16,7 +15,6 @@ const manifest = {
     "./routes/_app.tsx": $1,
     "./routes/gfm.css.ts": $2,
     "./routes/index.tsx": $3,
-    "./routes/static/[id].ts": $4,
   },
   islands: {
     "./islands/BotTokenInput.tsx": $$0,

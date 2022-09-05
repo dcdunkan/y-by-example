@@ -1,7 +1,17 @@
 {
   "tasks": {
     "start": "deno run -A --watch=static/,routes/ dev.ts",
-    "gen": "deno run -A gen.ts"
+    "bundle_examples": "deno run -A scripts/bundle_examples.ts"
   },
-  "importMap": "./import_map.json"
+  "importMap": "./import_map.json",
+  "fmt": {
+    "files": {
+      "exclude": ["./static"]
+    }
+  },
+  "lint": {
+    "files": {
+      "exclude": ["./static"]
+    }
+  }
 }
