@@ -9,6 +9,7 @@
     "twind": "https://esm.sh/twind@0.16.17",
     "twind/": "https://esm.sh/twind@0.16.17/",
     "prism": "https://esm.sh/prismjs@1.25.0?pin=v55",
-    "gfm": "https://deno.land/x/gfm@0.1.22/mod.ts"
+    "gfm": "https://deno.land/x/gfm@0.1.22/mod.ts",
+    "deno_emit": "https://deno.land/x/emit@0.8.0/mod.ts"
   }
 }
