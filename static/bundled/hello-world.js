@@ -158,7 +158,8 @@ const ENTITY_KEYS = {
     code: {},
     pre: {},
     text_link: {},
-    text_mention: {}
+    text_mention: {},
+    custom_emoji: {}
 };
 const USER_KEYS = {
     me: {},
@@ -652,6 +653,9 @@ class Context {
     }
     replyWithSticker(sticker, other, signal) {
         return this.api.sendSticker(orThrow(this.chat, "sendSticker").id, sticker, other, signal);
+    }
+    getCustomEmojiStickers(signal) {
+        return this.api.getCustomEmojiStickers((this.msg?.entities ?? []).filter((e)=>e.type === "custom_emoji").map((e)=>e.custom_emoji_id), signal);
     }
     answerInlineQuery(results, other, signal) {
         return this.api.answerInlineQuery(orThrow(this.inlineQuery, "answerInlineQuery").id, results, other, signal);
@@ -1481,27 +1485,6 @@ browser$1.log;
 browser$1.save;
 browser$1.storage;
 browser$1.useColors;
-var l = Object.create;
-var o = Object.defineProperty;
-var r = Object.getOwnPropertyDescriptor;
-var m1 = Object.getOwnPropertyNames;
-var n = Object.getPrototypeOf, s1 = Object.prototype.hasOwnProperty;
-var i = (t, e)=>()=>(e || t((e = {
-            exports: {}
-        }).exports, e), e.exports);
-var p = (t, e, d, f)=>{
-    if (e && typeof e == "object" || typeof e == "function") for (let _ of m1(e))!s1.call(t, _) && _ !== d && o(t, _, {
-        get: ()=>e[_],
-        enumerable: !(f = r(e, _)) || f.enumerable
-    });
-    return t;
-};
-var c = (t, e, d)=>(d = t != null ? l(n(t)) : {}, p(e || !t || !t.__esModule ? o(d, "default", {
-        value: t,
-        enumerable: !0
-    }) : d, t));
-var u = i(()=>{});
-var x = c(u()), { default: a , ...b } = x;
 class DenoStdInternalError extends Error {
     constructor(message){
         super(message);
@@ -1927,6 +1910,7 @@ class BufWriterSync extends AbstractBufBase {
         return totalBytesWritten;
     }
 }
+const DEFAULT_BUFFER_SIZE = 32 * 1024;
 function readableStreamFromIterable(iterable) {
     const iterator = iterable[Symbol.asyncIterator]?.() ?? iterable[Symbol.iterator]?.();
     return new ReadableStream({
@@ -1946,6 +1930,17 @@ function readableStreamFromIterable(iterable) {
             }
         }
     });
+}
+async function* iterateReader(r, options) {
+    const bufSize = options?.bufSize ?? DEFAULT_BUFFER_SIZE;
+    const b = new Uint8Array(bufSize);
+    while(true){
+        const result = await r.read(b);
+        if (result === null) {
+            break;
+        }
+        yield b.subarray(0, result);
+    }
 }
 "\r".charCodeAt(0);
 "\n".charCodeAt(0);
@@ -2104,17 +2099,6 @@ function encodeWhitespace(string) {
     return string.replaceAll(/[\s]/g, (c)=>{
         return WHITESPACE_ENCODINGS[c] ?? c;
     });
-}
-class DenoStdInternalError1 extends Error {
-    constructor(message){
-        super(message);
-        this.name = "DenoStdInternalError";
-    }
-}
-function assert1(expr, msg = "") {
-    if (!expr) {
-        throw new DenoStdInternalError1(msg);
-    }
 }
 const sep = "\\";
 const delimiter = ";";
@@ -2323,7 +2307,7 @@ function join(...paths) {
     if (joined === undefined) return ".";
     let needsReplace = true;
     let slashCount = 0;
-    assert1(firstPart != null);
+    assert(firstPart != null);
     if (isPathSeparator(firstPart.charCodeAt(0))) {
         ++slashCount;
         const firstLen = firstPart.length;
@@ -3088,434 +3072,27 @@ const path = isWindows ? mod : mod1;
 const { join: join2 , normalize: normalize2  } = path;
 const path1 = isWindows ? mod : mod1;
 const { basename: basename2 , delimiter: delimiter2 , dirname: dirname2 , extname: extname2 , format: format2 , fromFileUrl: fromFileUrl2 , isAbsolute: isAbsolute2 , join: join3 , normalize: normalize3 , parse: parse4 , relative: relative2 , resolve: resolve2 , sep: sep2 , toFileUrl: toFileUrl2 , toNamespacedPath: toNamespacedPath2 ,  } = path1;
-function copy1(src, dst, off = 0) {
-    off = Math.max(0, Math.min(off, dst.byteLength));
-    const dstBytesAvailable = dst.byteLength - off;
-    if (src.byteLength > dstBytesAvailable) {
-        src = src.subarray(0, dstBytesAvailable);
-    }
-    dst.set(src, off);
-    return src.byteLength;
-}
-const MIN_BUF_SIZE1 = 16;
-const CR1 = "\r".charCodeAt(0);
-const LF1 = "\n".charCodeAt(0);
-class BufferFullError1 extends Error {
-    name;
-    constructor(partial){
-        super("Buffer full");
-        this.partial = partial;
-        this.name = "BufferFullError";
-    }
-    partial;
-}
-class PartialReadError1 extends Error {
-    name = "PartialReadError";
-    partial;
-    constructor(){
-        super("Encountered UnexpectedEof, data only partially read");
-    }
-}
-class BufReader1 {
-    #buf;
-    #rd;
-    #r = 0;
-    #w = 0;
-    #eof = false;
-    static create(r, size = 4096) {
-        return r instanceof BufReader1 ? r : new BufReader1(r, size);
-    }
-    constructor(rd, size = 4096){
-        if (size < 16) {
-            size = MIN_BUF_SIZE1;
-        }
-        this.#reset(new Uint8Array(size), rd);
-    }
-    size() {
-        return this.#buf.byteLength;
-    }
-    buffered() {
-        return this.#w - this.#r;
-    }
-    #fill = async ()=>{
-        if (this.#r > 0) {
-            this.#buf.copyWithin(0, this.#r, this.#w);
-            this.#w -= this.#r;
-            this.#r = 0;
-        }
-        if (this.#w >= this.#buf.byteLength) {
-            throw Error("bufio: tried to fill full buffer");
-        }
-        for(let i = 100; i > 0; i--){
-            const rr = await this.#rd.read(this.#buf.subarray(this.#w));
-            if (rr === null) {
-                this.#eof = true;
-                return;
-            }
-            assert1(rr >= 0, "negative read");
-            this.#w += rr;
-            if (rr > 0) {
-                return;
-            }
-        }
-        throw new Error(`No progress after ${100} read() calls`);
-    };
-    reset(r) {
-        this.#reset(this.#buf, r);
-    }
-    #reset = (buf, rd)=>{
-        this.#buf = buf;
-        this.#rd = rd;
-        this.#eof = false;
-    };
-    async read(p) {
-        let rr = p.byteLength;
-        if (p.byteLength === 0) return rr;
-        if (this.#r === this.#w) {
-            if (p.byteLength >= this.#buf.byteLength) {
-                const rr1 = await this.#rd.read(p);
-                const nread = rr1 ?? 0;
-                assert1(nread >= 0, "negative read");
-                return rr1;
-            }
-            this.#r = 0;
-            this.#w = 0;
-            rr = await this.#rd.read(this.#buf);
-            if (rr === 0 || rr === null) return rr;
-            assert1(rr >= 0, "negative read");
-            this.#w += rr;
-        }
-        const copied = copy1(this.#buf.subarray(this.#r, this.#w), p, 0);
-        this.#r += copied;
-        return copied;
-    }
-    async readFull(p) {
-        let bytesRead = 0;
-        while(bytesRead < p.length){
-            try {
-                const rr = await this.read(p.subarray(bytesRead));
-                if (rr === null) {
-                    if (bytesRead === 0) {
-                        return null;
-                    } else {
-                        throw new PartialReadError1();
-                    }
-                }
-                bytesRead += rr;
-            } catch (err) {
-                if (err instanceof PartialReadError1) {
-                    err.partial = p.subarray(0, bytesRead);
-                } else if (err instanceof Error) {
-                    const e = new PartialReadError1();
-                    e.partial = p.subarray(0, bytesRead);
-                    e.stack = err.stack;
-                    e.message = err.message;
-                    e.cause = err.cause;
-                    throw err;
-                }
-                throw err;
-            }
-        }
-        return p;
-    }
-    async readByte() {
-        while(this.#r === this.#w){
-            if (this.#eof) return null;
-            await this.#fill();
-        }
-        const c = this.#buf[this.#r];
-        this.#r++;
-        return c;
-    }
-    async readString(delim) {
-        if (delim.length !== 1) {
-            throw new Error("Delimiter should be a single character");
-        }
-        const buffer = await this.readSlice(delim.charCodeAt(0));
-        if (buffer === null) return null;
-        return new TextDecoder().decode(buffer);
-    }
-    async readLine() {
-        let line = null;
-        try {
-            line = await this.readSlice(LF1);
-        } catch (err) {
-            if (err instanceof Deno.errors.BadResource) {
-                throw err;
-            }
-            let partial;
-            if (err instanceof PartialReadError1) {
-                partial = err.partial;
-                assert1(partial instanceof Uint8Array, "bufio: caught error from `readSlice()` without `partial` property");
-            }
-            if (!(err instanceof BufferFullError1)) {
-                throw err;
-            }
-            partial = err.partial;
-            if (!this.#eof && partial && partial.byteLength > 0 && partial[partial.byteLength - 1] === CR1) {
-                assert1(this.#r > 0, "bufio: tried to rewind past start of buffer");
-                this.#r--;
-                partial = partial.subarray(0, partial.byteLength - 1);
-            }
-            if (partial) {
-                return {
-                    line: partial,
-                    more: !this.#eof
-                };
-            }
-        }
-        if (line === null) {
-            return null;
-        }
-        if (line.byteLength === 0) {
-            return {
-                line,
-                more: false
-            };
-        }
-        if (line[line.byteLength - 1] == LF1) {
-            let drop = 1;
-            if (line.byteLength > 1 && line[line.byteLength - 2] === CR1) {
-                drop = 2;
-            }
-            line = line.subarray(0, line.byteLength - drop);
-        }
-        return {
-            line,
-            more: false
-        };
-    }
-    async readSlice(delim) {
-        let s = 0;
-        let slice;
-        while(true){
-            let i = this.#buf.subarray(this.#r + s, this.#w).indexOf(delim);
-            if (i >= 0) {
-                i += s;
-                slice = this.#buf.subarray(this.#r, this.#r + i + 1);
-                this.#r += i + 1;
-                break;
-            }
-            if (this.#eof) {
-                if (this.#r === this.#w) {
-                    return null;
-                }
-                slice = this.#buf.subarray(this.#r, this.#w);
-                this.#r = this.#w;
-                break;
-            }
-            if (this.buffered() >= this.#buf.byteLength) {
-                this.#r = this.#w;
-                const oldbuf = this.#buf;
-                const newbuf = this.#buf.slice(0);
-                this.#buf = newbuf;
-                throw new BufferFullError1(oldbuf);
-            }
-            s = this.#w - this.#r;
-            try {
-                await this.#fill();
-            } catch (err) {
-                if (err instanceof PartialReadError1) {
-                    err.partial = slice;
-                } else if (err instanceof Error) {
-                    const e = new PartialReadError1();
-                    e.partial = slice;
-                    e.stack = err.stack;
-                    e.message = err.message;
-                    e.cause = err.cause;
-                    throw err;
-                }
-                throw err;
-            }
-        }
-        return slice;
-    }
-    async peek(n) {
-        if (n < 0) {
-            throw Error("negative count");
-        }
-        let avail = this.#w - this.#r;
-        while(avail < n && avail < this.#buf.byteLength && !this.#eof){
-            try {
-                await this.#fill();
-            } catch (err) {
-                if (err instanceof PartialReadError1) {
-                    err.partial = this.#buf.subarray(this.#r, this.#w);
-                } else if (err instanceof Error) {
-                    const e = new PartialReadError1();
-                    e.partial = this.#buf.subarray(this.#r, this.#w);
-                    e.stack = err.stack;
-                    e.message = err.message;
-                    e.cause = err.cause;
-                    throw err;
-                }
-                throw err;
-            }
-            avail = this.#w - this.#r;
-        }
-        if (avail === 0 && this.#eof) {
-            return null;
-        } else if (avail < n && this.#eof) {
-            return this.#buf.subarray(this.#r, this.#r + avail);
-        } else if (avail < n) {
-            throw new BufferFullError1(this.#buf.subarray(this.#r, this.#w));
-        }
-        return this.#buf.subarray(this.#r, this.#r + n);
-    }
-}
-class AbstractBufBase1 {
-    buf;
-    usedBufferBytes = 0;
-    err = null;
-    constructor(buf){
-        this.buf = buf;
-    }
-    size() {
-        return this.buf.byteLength;
-    }
-    available() {
-        return this.buf.byteLength - this.usedBufferBytes;
-    }
-    buffered() {
-        return this.usedBufferBytes;
-    }
-}
-class BufWriter1 extends AbstractBufBase1 {
-    #writer;
-    static create(writer, size = 4096) {
-        return writer instanceof BufWriter1 ? writer : new BufWriter1(writer, size);
-    }
-    constructor(writer, size = 4096){
-        super(new Uint8Array(size <= 0 ? 4096 : size));
-        this.#writer = writer;
-    }
-    reset(w) {
-        this.err = null;
-        this.usedBufferBytes = 0;
-        this.#writer = w;
-    }
-    async flush() {
-        if (this.err !== null) throw this.err;
-        if (this.usedBufferBytes === 0) return;
-        try {
-            const p = this.buf.subarray(0, this.usedBufferBytes);
-            let nwritten = 0;
-            while(nwritten < p.length){
-                nwritten += await this.#writer.write(p.subarray(nwritten));
-            }
-        } catch (e) {
-            if (e instanceof Error) {
-                this.err = e;
-            }
-            throw e;
-        }
-        this.buf = new Uint8Array(this.buf.length);
-        this.usedBufferBytes = 0;
-    }
-    async write(data) {
-        if (this.err !== null) throw this.err;
-        if (data.length === 0) return 0;
-        let totalBytesWritten = 0;
-        let numBytesWritten = 0;
-        while(data.byteLength > this.available()){
-            if (this.buffered() === 0) {
-                try {
-                    numBytesWritten = await this.#writer.write(data);
-                } catch (e) {
-                    if (e instanceof Error) {
-                        this.err = e;
-                    }
-                    throw e;
-                }
-            } else {
-                numBytesWritten = copy1(data, this.buf, this.usedBufferBytes);
-                this.usedBufferBytes += numBytesWritten;
-                await this.flush();
-            }
-            totalBytesWritten += numBytesWritten;
-            data = data.subarray(numBytesWritten);
-        }
-        numBytesWritten = copy1(data, this.buf, this.usedBufferBytes);
-        this.usedBufferBytes += numBytesWritten;
-        totalBytesWritten += numBytesWritten;
-        return totalBytesWritten;
-    }
-}
-class BufWriterSync1 extends AbstractBufBase1 {
-    #writer;
-    static create(writer, size = 4096) {
-        return writer instanceof BufWriterSync1 ? writer : new BufWriterSync1(writer, size);
-    }
-    constructor(writer, size = 4096){
-        super(new Uint8Array(size <= 0 ? 4096 : size));
-        this.#writer = writer;
-    }
-    reset(w) {
-        this.err = null;
-        this.usedBufferBytes = 0;
-        this.#writer = w;
-    }
-    flush() {
-        if (this.err !== null) throw this.err;
-        if (this.usedBufferBytes === 0) return;
-        try {
-            const p = this.buf.subarray(0, this.usedBufferBytes);
-            let nwritten = 0;
-            while(nwritten < p.length){
-                nwritten += this.#writer.writeSync(p.subarray(nwritten));
-            }
-        } catch (e) {
-            if (e instanceof Error) {
-                this.err = e;
-            }
-            throw e;
-        }
-        this.buf = new Uint8Array(this.buf.length);
-        this.usedBufferBytes = 0;
-    }
-    writeSync(data) {
-        if (this.err !== null) throw this.err;
-        if (data.length === 0) return 0;
-        let totalBytesWritten = 0;
-        let numBytesWritten = 0;
-        while(data.byteLength > this.available()){
-            if (this.buffered() === 0) {
-                try {
-                    numBytesWritten = this.#writer.writeSync(data);
-                } catch (e) {
-                    if (e instanceof Error) {
-                        this.err = e;
-                    }
-                    throw e;
-                }
-            } else {
-                numBytesWritten = copy1(data, this.buf, this.usedBufferBytes);
-                this.usedBufferBytes += numBytesWritten;
-                this.flush();
-            }
-            totalBytesWritten += numBytesWritten;
-            data = data.subarray(numBytesWritten);
-        }
-        numBytesWritten = copy1(data, this.buf, this.usedBufferBytes);
-        this.usedBufferBytes += numBytesWritten;
-        totalBytesWritten += numBytesWritten;
-        return totalBytesWritten;
-    }
-}
-const DEFAULT_BUFFER_SIZE = 32 * 1024;
-async function* iterateReader(r, options) {
-    const bufSize = options?.bufSize ?? DEFAULT_BUFFER_SIZE;
-    const b = new Uint8Array(bufSize);
-    while(true){
-        const result = await r.read(b);
-        if (result === null) {
-            break;
-        }
-        yield b.subarray(0, result);
-    }
-}
-"\r".charCodeAt(0);
-"\n".charCodeAt(0);
+var l = Object.create;
+var o = Object.defineProperty;
+var r = Object.getOwnPropertyDescriptor;
+var m1 = Object.getOwnPropertyNames;
+var n = Object.getPrototypeOf, s1 = Object.prototype.hasOwnProperty;
+var i = (t, e)=>()=>(e || t((e = {
+            exports: {}
+        }).exports, e), e.exports);
+var p = (t, e, d, f)=>{
+    if (e && typeof e == "object" || typeof e == "function") for (let _ of m1(e))!s1.call(t, _) && _ !== d && o(t, _, {
+        get: ()=>e[_],
+        enumerable: !(f = r(e, _)) || f.enumerable
+    });
+    return t;
+};
+var c = (t, e, d)=>(d = t != null ? l(n(t)) : {}, p(e || !t || !t.__esModule ? o(d, "default", {
+        value: t,
+        enumerable: !0
+    }) : d, t));
+var u = i(()=>{});
+var x = c(u()), { default: a , ...b } = x;
 const debug = browser$1("grammy:warn");
 class InputFile {
     consumed = false;
@@ -4346,6 +3923,11 @@ class Api {
     getStickerSet(name, signal) {
         return this.raw.getStickerSet({
             name
+        }, signal);
+    }
+    getCustomEmojiStickers(custom_emoji_ids, signal) {
+        return this.raw.getCustomEmojiStickers({
+            custom_emoji_ids
         }, signal);
     }
     uploadStickerFile(user_id, png_sticker, signal) {
