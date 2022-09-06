@@ -1,7 +1,7 @@
 import { bundle } from "deno_emit";
 import { CONTENTS } from "../utils/contents.ts";
 
-await Deno.mkdir("./static/static", { recursive: true });
+await Deno.mkdir("./static/bundled", { recursive: true });
 
 for (const example of CONTENTS) {
   let content = await Deno.readTextFile(`./contents/${example}.ts`);
@@ -21,6 +21,6 @@ for (const example of CONTENTS) {
   await Deno.writeTextFile(tmp, content);
   const bundled = await bundle(tmp);
   await Deno.remove(tmp);
-  await Deno.writeTextFile(`./static/static/${example}.js`, bundled.code);
+  await Deno.writeTextFile(`./static/bundled/${example}.js`, bundled.code);
   console.log(`[Bundle] ${example}.ts`);
 }
