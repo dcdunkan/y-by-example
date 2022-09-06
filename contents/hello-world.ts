@@ -11,8 +11,7 @@
 // You can make your bot say "Hello, World" to the user with very few lines of code using grammY.
 
 // First, let's import the main `Bot` class from grammY.
-import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";
-//- import { Bot } from "grammy"; // Node.js
+import { Bot } from "https://deno.land/x/grammy@v1.11.0/mod.ts";
 
 // Now create an instance of the bot using your Bot Token.
 const bot = new Bot("BOT_TOKEN");
