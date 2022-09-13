@@ -6,9 +6,7 @@ import { Loading, Start, Stop } from "../components/Icons.tsx";
 import { Example } from "../utils/example.ts";
 import confetti from "https://cdn.skypack.dev/canvas-confetti?dts";
 
-export default function TitleSection(
-  { id, example }: { id: string; example: Example },
-) {
+export default function ExampleHeader({ example }: { example: Example }) {
   const [running, setRunning] = useState(false);
   const [busy, setBusy] = useState(false);
   // deno-lint-ignore no-explicit-any
@@ -74,7 +72,7 @@ export default function TitleSection(
       const token = localStorage.getItem("token");
       if (token) {
         setBusy(true);
-        const url = new URL(`/bundled/${id}.js`, location.href);
+        const url = new URL(`/bundled/${example.id}.js`, location.href);
         const { getBot } = await import(url.toString());
         const bot = getBot(token);
         await bot.init();

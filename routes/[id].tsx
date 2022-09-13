@@ -8,7 +8,7 @@ import { CircleArrow } from "../components/Icons.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
 import { CONTENTS } from "../utils/contents.ts";
-import TitleSection from "../islands/RunButton.tsx";
+import ExampleHeader from "../islands/ExampleHeader.tsx";
 import { VERSIONS } from "../utils/versions.ts";
 
 import Prism from "prism";
@@ -124,7 +124,7 @@ export default function ExamplePage(props: PageProps<Data>) {
           {" /"}
         </h4>
 
-        <TitleSection example={example} id={props.params.id} />
+        <ExampleHeader example={example} />
 
         {example.introduction && (
           <div class={tw`mt-4`}>
