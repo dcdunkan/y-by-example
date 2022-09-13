@@ -2,72 +2,118 @@
 import { h } from "preact";
 import { tw } from "twind";
 import { useEffect, useState } from "preact/hooks";
-import { Info, Loading, Start, Stop } from "../components/Icons.tsx";
+import { Loading, Start, Stop } from "../components/Icons.tsx";
+import { Example } from "../utils/example.ts";
+import confetti from "https://cdn.skypack.dev/canvas-confetti?dts";
 
-export default function RunButton({ id }: { id: string }) {
-  const [enabled, setEnabled] = useState(false);
+export default function TitleSection(
+  { id, example }: { id: string; example: Example },
+) {
   const [running, setRunning] = useState(false);
   const [busy, setBusy] = useState(false);
   // deno-lint-ignore no-explicit-any
   const [bot, setBot] = useState<any>(undefined);
-  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState(example.description);
+  const [reason, setReason] = useState("Sorry, you cannot run this example.");
 
   async function run() {
     if (!bot) {
-      setTitle("You can't run this example");
+      setDesc(reason);
+      setTimeout(() => setDesc(example.description), 4000);
       return;
     }
     if (busy) {
-      setTitle("Loading...");
+      setDesc("Loading...");
       return;
     }
     setBusy(true);
     if (running) {
-      await bot.stop();
       setRunning(false);
+      setDesc("Stopping the bot...");
+      await bot.stop();
       setBusy(false);
-      setTitle("Click to run the example");
+      setDesc(example.description);
     } else {
       bot.start({
         drop_pending_updates: true,
-        onStart: ({ username }: { username: string }) => {
+        onStart: async ({ username }: { username: string }) => {
           setBusy(false);
           setRunning(true);
-          setTitle(`Live at @${username}. Click to stop.`);
+
+          const liveStatus =
+            `Example is active at <a class="hover:text-grammy-500 hover:underline" href="https://telegram.me/${username}">@${username}</a>.`;
+
+          const showConfetti = localStorage.getItem("showConfetti");
+          if (showConfetti !== "false") {
+            setDesc("Yay! Welcome to grammY!");
+            setTimeout(() => setDesc(liveStatus), 4000);
+            localStorage.setItem("showConfetti", "false");
+            await confetti({
+              scalar: 1.5,
+              particleCount: 500,
+              ticks: 500,
+              spread: 180,
+              startVelocity: 80,
+              disableForReducedMotion: true,
+              origin: { y: 0 },
+            });
+          } else {
+            setDesc(liveStatus);
+          }
         },
       }).catch(() => {
         setBusy(false);
-        setRunning(true);
-        setTitle("Error occurred while running");
+        setRunning(false);
+        setDesc("Error occurred while running :(");
       });
     }
   }
 
   useEffect(() => {
     (async () => {
-      setTitle("Loading...");
       const token = localStorage.getItem("token");
       if (token) {
+        setBusy(true);
         const url = new URL(`/bundled/${id}.js`, location.href);
         const { getBot } = await import(url.toString());
         const bot = getBot(token);
         await bot.init();
+        setBusy(false);
         setBot(bot);
-        setEnabled(true);
-        setTitle("Click to run the example");
+        setDesc(example.description);
       } else {
-        setTitle("No bot token set");
+        setReason(
+          `<a href="/#token" class="hover:text-grammy-500 hover:underline">No bot token, no bot ¯_(ツ)_/¯</a>`,
+        );
       }
     })();
   }, []);
 
   return (
-    <button
-      class={tw`focus:outline-none`}
-      onClick={run}
-      title={title}
-    >
-      {enabled ? running ? <Stop /> : busy ? <Loading /> : <Start /> : <Info />}
-    </button>
+    <div>
+      <div class={tw`flex items-center gap-2.5`}>
+        <h1 class={tw`mt-2 text-3xl font-bold`}>
+          {example.title}
+        </h1>
+        {example.run && (
+          <button
+            class={tw`focus:outline-none`}
+            onClick={run}
+            disabled={busy}
+          >
+            {running ? <Stop /> : busy ? <Loading /> : <Start />}
+          </button>
+        )}
+      </div>
+      {desc && (
+        <div class={tw`mt-1`}>
+          <p
+            class={tw`text-gray-500`}
+            dangerouslySetInnerHTML={{ __html: desc }}
+          >
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

@@ -8,7 +8,7 @@ import { CircleArrow } from "../components/Icons.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
 import { CONTENTS } from "../utils/contents.ts";
-import RunButton from "../islands/RunButton.tsx";
+import TitleSection from "../islands/RunButton.tsx";
 import { VERSIONS } from "../utils/versions.ts";
 
 import Prism from "prism";
@@ -124,20 +124,7 @@ export default function ExamplePage(props: PageProps<Data>) {
           {" /"}
         </h4>
 
-        <div class={tw`flex items-center gap-2.5`}>
-          <h1 class={tw`mt-2 text-3xl font-bold`}>
-            {example.title}
-          </h1>
-          <RunButton id={props.params.id} />
-        </div>
-
-        {example.description && (
-          <div class={tw`mt-1`}>
-            <p class={tw`text-gray-500`}>
-              {example.description}
-            </p>
-          </div>
-        )}
+        <TitleSection example={example} id={props.params.id} />
 
         {example.introduction && (
           <div class={tw`mt-4`}>
