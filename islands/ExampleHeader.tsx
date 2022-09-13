@@ -45,15 +45,14 @@ export default function ExampleHeader({ example }: { example: Example }) {
           if (showConfetti !== "false") {
             setDesc("Yay! Welcome to grammY!");
             setTimeout(() => setDesc(liveStatus), 4000);
-            localStorage.setItem("showConfetti", "false");
+            // localStorage.setItem("showConfetti", "false");
             await confetti({
-              scalar: 1.5,
-              particleCount: 500,
+              particleCount: 1000,
               ticks: 500,
-              spread: 180,
-              startVelocity: 80,
+              spread: 120,
+              startVelocity: 120,
               disableForReducedMotion: true,
-              origin: { y: 0 },
+              origin: { y: 1.4 },
             });
           } else {
             setDesc(liveStatus);
