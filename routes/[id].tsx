@@ -4,14 +4,15 @@ import { Fragment, h } from "preact";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
-import Prism from "prism";
-import "https://esm.sh/prismjs@1.25.0/components/prism-typescript.js?no-check&pin=v55";
 import { CircleArrow } from "../components/Icons.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
 import { CONTENTS } from "../utils/contents.ts";
 import RunButton from "../islands/RunButton.tsx";
 import { VERSIONS } from "../utils/versions.ts";
+
+import Prism from "prism";
+import "https://esm.sh/prismjs@1.25.0/components/prism-typescript.js?no-check&pin=v55";
 
 interface Data {
   example: Example;
@@ -79,7 +80,7 @@ if (!__BOT_TOKEN__) throw new Error("Invalid bot token.");\n\n`;
       code = code.replace(/"BOT_TOKEN"/g, "__BOT_TOKEN__");
       code = code.replace(
         /https:\/\/deno\.land\/x\/grammy(|@v\d+.\d+.\d+)\/(.+)/g,
-        `https://deno.land/x/grammy@${VERSIONS.grammy}/$2`,
+        `https://deno.land/x/grammy${VERSIONS.grammy}/$2`,
       );
 
       return new Response(code, {
@@ -289,7 +290,7 @@ function SnippetComponent(props: {
   // TODO: replacing for all modules.
   props.snippet.code = props.snippet.code.replace(
     /https:\/\/deno\.land\/x\/grammy(@\d.\d.\d|)\/(.+)/g,
-    `https://deno.land/x/grammy@${VERSIONS.grammy}/$2`,
+    `https://deno.land/x/grammy${VERSIONS.grammy}/$2`,
   );
 
   const renderedSnippet = Prism.highlight(

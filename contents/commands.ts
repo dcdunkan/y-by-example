@@ -11,7 +11,7 @@
 // Lets find out how to make your bot obey when you send a /command.
 
 // Lets setup the bot as we seen in the Hello World example.
-import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";
+import { Bot } from "https://deno.land/x/grammy@v1.11.0/mod.ts";
 const bot = new Bot("BOT_TOKEN");
 
 // There are three "standard" commands: start, help, and settings.

@@ -1,4 +1,3 @@
-import { bundle } from "deno_emit";
 import { CONTENTS } from "../utils/contents.ts";
 
 await Deno.mkdir("./static/bundled", { recursive: true });
@@ -19,8 +18,18 @@ for (const example of CONTENTS) {
 
   const tmp = await Deno.makeTempFile({ suffix: ".ts" });
   await Deno.writeTextFile(tmp, content);
-  const bundled = await bundle(tmp);
+
+  const bundleProcess = Deno.run({
+    cmd: [
+      "deno",
+      "bundle",
+      tmp,
+      "--no-check",
+      `./static/bundled/${example}.js`,
+    ],
+  });
+
+  await bundleProcess.status();
+  bundleProcess.close();
   await Deno.remove(tmp);
-  await Deno.writeTextFile(`./static/bundled/${example}.js`, bundled.code);
-  console.log(`[Bundle] ${example}.ts`);
 }
