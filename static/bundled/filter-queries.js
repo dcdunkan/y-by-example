@@ -4711,7 +4711,7 @@ function sleep(seconds) {
 browser$1("grammy:session");
 browser$1("grammy:error");
 function getBot(token) {
-    const bot = new Bot("<REPLACE_BOT_TOKEN>");
+    const bot = new Bot(token);
     return bot;
 }
 export { getBot as getBot };
