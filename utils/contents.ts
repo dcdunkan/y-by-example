@@ -3,4 +3,5 @@ export const CONTENTS = [
   "echo-bot",
   "commands",
   "message-formatting",
+  "filter-queries",
 ];
