@@ -1,20 +1,20 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
 import { Fragment, h } from "preact";
-import { getCookies } from "std/http/cookie.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
-import Prism from "prism";
-import "https://esm.sh/prismjs@1.25.0/components/prism-typescript.js?no-check&pin=v55";
 import { CircleArrow } from "../components/Icons.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";
 import { CONTENTS } from "../utils/contents.ts";
+import RunButton from "../islands/RunButton.tsx";
 import { VERSIONS } from "../utils/versions.ts";
 
+import Prism from "prism";
+import "https://esm.sh/prismjs@1.25.0/components/prism-typescript.js?no-check&pin=v55";
+
 interface Data {
-  token: string;
   example: Example;
   prev: Example | null;
   next: Example | null;
@@ -22,8 +22,6 @@ interface Data {
 
 export const handler: Handlers<Data> = {
   async GET(req, ctx) {
-    const token = getCookies(req.headers)["bot_token"] ?? "";
-
     let id = ctx.params.id;
     let endsWithTS = false;
     if (id.endsWith(".ts")) {
@@ -79,10 +77,10 @@ if (!__BOT_TOKEN__) throw new Error("Invalid bot token.");\n\n`;
         code += snippet.code + "\n";
       }
 
-      code = code.replace(/"<REPLACE_BOT_TOKEN>"/g, "__BOT_TOKEN__");
+      code = code.replace(/"BOT_TOKEN"/g, "__BOT_TOKEN__");
       code = code.replace(
         /https:\/\/deno\.land\/x\/grammy(|@v\d+.\d+.\d+)\/(.+)/g,
-        `https://deno.land/x/grammy@${VERSIONS.grammy}/$2`,
+        `https://deno.land/x/grammy${VERSIONS.grammy}/$2`,
       );
 
       return new Response(code, {
@@ -95,12 +93,12 @@ if (!__BOT_TOKEN__) throw new Error("Invalid bot token.");\n\n`;
     }
 
     // Otherwise, we'll render the example.
-    return ctx.render({ example, prev, next, token });
+    return ctx.render({ example, prev, next });
   },
 };
 
 export default function ExamplePage(props: PageProps<Data>) {
-  const { example, prev, next, token } = props.data;
+  const { example, prev, next } = props.data;
 
   if (!example) {
     return <div>404 Example Not Found</div>;
@@ -109,7 +107,7 @@ export default function ExamplePage(props: PageProps<Data>) {
   const url = `${props.url.origin}${props.url.pathname}.ts`;
 
   const description = (example.description || example.title) +
-    " -- grammY by example is a collection of annotated examples to help beginners to get started with grammY, and the various features and plugins that comes with it.";
+    " — grammY by example is a collection of annotated examples to help beginners get started with grammY, and the various features and plugins that comes with it.";
 
   return (
     <>
@@ -126,7 +124,12 @@ export default function ExamplePage(props: PageProps<Data>) {
           {" /"}
         </h4>
 
-        <h1 class={tw`mt-2 text-3xl font-bold`}>{example.title}</h1>
+        <div class={tw`flex items-center gap-2.5`}>
+          <h1 class={tw`mt-2 text-3xl font-bold`}>
+            {example.title}
+          </h1>
+          <RunButton id={props.params.id} />
+        </div>
 
         {example.description && (
           <div class={tw`mt-1`}>
@@ -153,7 +156,6 @@ export default function ExamplePage(props: PageProps<Data>) {
                 lastOfFile={i === file.snippets.length - 1}
                 filename={file.name}
                 snippet={snippet}
-                token={token}
               />
             ))}
           </div>
@@ -284,17 +286,11 @@ function SnippetComponent(props: {
   firstOfFile: boolean;
   lastOfFile: boolean;
   snippet: ExampleSnippet;
-  token: string;
 }) {
-  props.snippet.code = props.snippet.code.replace(
-    /<REPLACE_BOT_TOKEN>/g,
-    props.token || "BOT_TOKEN",
-  );
-
   // TODO: replacing for all modules.
   props.snippet.code = props.snippet.code.replace(
     /https:\/\/deno\.land\/x\/grammy(@\d.\d.\d|)\/(.+)/g,
-    `https://deno.land/x/grammy@${VERSIONS.grammy}/$2`,
+    `https://deno.land/x/grammy${VERSIONS.grammy}/$2`,
   );
 
   const renderedSnippet = Prism.highlight(

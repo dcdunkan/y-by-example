@@ -12,7 +12,7 @@
 // By providing 'parse_mode' option while sending messages, your bot can also do this.
 
 // As usual, import the main `Bot` class from grammY.
-import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";
+import { Bot } from "https://deno.land/x/grammy@v1.11.0/mod.ts";
 
 // Next step: create an instance of the bot using your Bot Token.
 const bot = new Bot("BOT_TOKEN");

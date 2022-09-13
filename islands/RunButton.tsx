@@ -1,0 +1,62 @@
+/** @jsx h */
+import { h } from "preact";
+import { tw } from "twind";
+import { useEffect, useState } from "preact/hooks";
+import { Loading, Start, Stop } from "../components/Icons.tsx";
+
+export default function RunButton({ id }: { id: string }) {
+  const [enabled, setEnabled] = useState(false);
+  const [running, setRunning] = useState(false);
+  const [busy, setBusy] = useState(false);
+  // deno-lint-ignore no-explicit-any
+  const [bot, setBot] = useState<any>(undefined);
+
+  async function run() {
+    if (!bot) {
+      return;
+    }
+    if (busy) {
+      return;
+    }
+    setBusy(true);
+    if (running) {
+      await bot.stop();
+      setRunning(false);
+      setBusy(false);
+    } else {
+      bot.start({
+        drop_pending_updates: true,
+        onStart: () => {
+          setBusy(false);
+          setRunning(true);
+        },
+      }).catch(() => {
+        setBusy(false);
+        setRunning(true);
+      });
+    }
+  }
+
+  useEffect(() => {
+    (async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const url = new URL(`/bundled/${id}.js`, location.href);
+        const { getBot } = await import(url.toString());
+        const bot = getBot(token);
+        await bot.init();
+        setBot(bot);
+        setEnabled(true);
+      }
+    })();
+  }, []);
+
+  return (
+    <button
+      class={tw`focus:outline-none`}
+      onClick={run}
+    >
+      {enabled ? running ? <Stop /> : busy ? <Loading /> : <Start /> : ""}
+    </button>
+  );
+}

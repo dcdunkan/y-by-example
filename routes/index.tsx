@@ -3,59 +3,32 @@
 import { Fragment, h } from "preact";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { getCookies, setCookie } from "std/http/cookie.ts";
 import { tw } from "@twind";
 import { CONTENTS } from "../utils/contents.ts";
 import { Example, parseExample } from "../utils/example.ts";
 import { Footer } from "../components/Footer.tsx";
+import BotTokenInput from "../islands/BotTokenInput.tsx";
 import { GrammyByExample } from "../components/Logos.tsx";
+import { Start } from "../components/Icons.tsx";
 
 interface Data {
   examples: Example[];
-  token: string;
 }
 
 export const handler: Handlers<Data> = {
-  async GET(req, ctx) {
+  async GET(_req, ctx) {
     const examples = await Promise.all(
       CONTENTS.map((id) =>
         Deno.readTextFile(`./contents/${id}.ts`)
           .then((text) => parseExample(id, text))
       ),
     );
-
-    const token = getCookies(req.headers)["bot_token"] ?? "";
-    return ctx.render({ examples, token });
-  },
-  async POST(req, ctx) {
-    const examples = await Promise.all(
-      CONTENTS.map((id) =>
-        Deno.readTextFile(`./contents/${id}.ts`)
-          .then((text) => parseExample(id, text))
-      ),
-    );
-
-    const token = (await req.formData()).get("bot_token");
-
-    if (token) {
-      const response = await ctx.render({ examples, token: token.toString() });
-      setCookie(response.headers, {
-        name: "bot_token",
-        value: token.toString(),
-      });
-      return response;
-    }
-
-    return new Response(undefined, {
-      headers: { location: `/` },
-      status: 200,
-    });
+    return ctx.render({ examples });
   },
 };
 
 export default function IndexPage(props: PageProps<Data>) {
-  const { examples, token } = props.data;
-
+  const { examples } = props.data;
   return (
     <>
       <Head>
@@ -123,44 +96,17 @@ export default function IndexPage(props: PageProps<Data>) {
           runtime. But by changing the imports here and there, these can easily
           run on Node.js as well.
         </p>
-
-        <form method="POST">
-          <label
-            htmlFor="bot_token"
-            class={tw`block mt-8 mb-2 font-medium text-gray-900`}
-          >
-            Bot Token
-          </label>
-          <div class={tw`flex align-center`}>
-            <input
-              type="text"
-              id="bot_token"
-              name="bot_token"
-              class={tw`bg-gray-50 border focus:outline-none border-gray-300 text-gray-900 rounded-lg focus:ring-grammy-500 focus:border-grammy-500 w-full p-2.5`}
-              placeholder="123456:ABCdef"
-              value={token}
-            />
-            <button
-              type="submit"
-              class={tw`text-white bg-grammy-500 ml-2 hover:bg-grammy-500 focus:ring-4 focus:outline-none focus:ring-grammy-500 rounded-lg w-full sm:w-auto px-5 py-2.5 text-center`}
-            >
-              Save
-            </button>
-          </div>
-        </form>
+        <BotTokenInput />
         <p class={tw`mt-2 text-gray-500`}>
-          If you provide one, you can run the examples directly from your
-          browser! You can get one by chatting with the Father of all Telegram
-          bots, the{"  "}
+          If you provide a bot token, you will be able to run the examples
+          directly from your browser. You can get one by talking to{"  "}
           <a
             href="https://telegram.me/BotFather"
             class={tw`text-grammy-500 hover:underline`}
           >
-            BotFather
-          </a>{" "}
-          on Telegram.
+            @BotFather
+          </a>.
         </p>
-
         <p class={tw`mt-12 text-gray-500`}>
           <a
             href="https://github.com/dcdunkan/y-by-example"
