@@ -10,7 +10,7 @@
 
 // Import the `Bot` class and create an instance.
 import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";
-const bot = new Bot("<REPLACE_BOT_TOKEN>");
+const bot = new Bot("BOT_TOKEN");
 
 // The easiest way to create this bot is to just copy the incoming message to the same chat.
 // You can use the `copyMessage` method to achieve that.

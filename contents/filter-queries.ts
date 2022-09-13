@@ -15,7 +15,7 @@
 
 // Import the `Bot` class and create a bot using your bot token.
 import { Bot } from "https://deno.land/x/grammy@v1.10.1/mod.ts";
-const bot = new Bot("<REPLACE_BOT_TOKEN>");
+const bot = new Bot("BOT_TOKEN");
 
 // Start the bot.
 bot.start();
