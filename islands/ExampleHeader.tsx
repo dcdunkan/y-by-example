@@ -95,7 +95,9 @@ export default function ExampleHeader({ example }: { example: Example }) {
         </h1>
         {example.run && (
           <button
-            class={tw`focus:outline-none`}
+            class={tw`focus:outline-none ${
+              busy ? "" : `transform transition duration-300 hover:scale-110`
+            }`}
             onClick={run}
             disabled={busy}
           >
