@@ -4,7 +4,7 @@ import { tw } from "twind";
 import { useEffect, useState } from "preact/hooks";
 import { Loading, Start, Stop } from "../components/Icons.tsx";
 import { Example } from "../utils/example.ts";
-import confetti from "https://cdn.skypack.dev/canvas-confetti?dts";
+import confetti from "confetti";
 
 export default function ExampleHeader({ example }: { example: Example }) {
   const [running, setRunning] = useState(false);
