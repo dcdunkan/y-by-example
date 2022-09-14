@@ -7,7 +7,7 @@ import * as $1 from "./routes/_app.tsx";
 import * as $2 from "./routes/gfm.css.ts";
 import * as $3 from "./routes/index.tsx";
 import * as $$0 from "./islands/BotTokenInput.tsx";
-import * as $$1 from "./islands/RunButton.tsx";
+import * as $$1 from "./islands/ExampleHeader.tsx";
 
 const manifest = {
   routes: {
@@ -18,7 +18,7 @@ const manifest = {
   },
   islands: {
     "./islands/BotTokenInput.tsx": $$0,
-    "./islands/RunButton.tsx": $$1,
+    "./islands/ExampleHeader.tsx": $$1,
   },
   baseUrl: import.meta.url,
 };
