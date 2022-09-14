@@ -61,7 +61,7 @@ export default function BotTokenInput() {
         const username = await getMe(input);
         if (username) {
           setToken(input);
-          setText(`Authorized as @${username}.`);
+          setText(`Authenticated as @${username}.`);
         } else {
           setText("Invalid token");
         }
