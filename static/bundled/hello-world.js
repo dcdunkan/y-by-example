@@ -401,16 +401,16 @@ class Context {
         return this.update.chat_join_request;
     }
     get msg() {
-        return (((this.message ?? this.editedMessage) ?? this.callbackQuery?.message) ?? this.channelPost) ?? this.editedChannelPost;
+        return this.message ?? this.editedMessage ?? this.callbackQuery?.message ?? this.channelPost ?? this.editedChannelPost;
     }
     get chat() {
-        return (((this.msg ?? this.myChatMember) ?? this.chatMember) ?? this.chatJoinRequest)?.chat;
+        return (this.msg ?? this.myChatMember ?? this.chatMember ?? this.chatJoinRequest)?.chat;
     }
     get senderChat() {
         return this.msg?.sender_chat;
     }
     get from() {
-        return ((((((((this.callbackQuery ?? this.inlineQuery) ?? this.shippingQuery) ?? this.preCheckoutQuery) ?? this.chosenInlineResult) ?? this.msg) ?? this.myChatMember) ?? this.chatMember) ?? this.chatJoinRequest)?.from;
+        return (this.callbackQuery ?? this.inlineQuery ?? this.shippingQuery ?? this.preCheckoutQuery ?? this.chosenInlineResult ?? this.msg ?? this.myChatMember ?? this.chatMember ?? this.chatJoinRequest)?.from;
     }
     get inlineMessageId() {
         return this.callbackQuery?.inline_message_id ?? this.chosenInlineResult?.inline_message_id;
@@ -501,7 +501,7 @@ class Context {
     }
     getFile(signal) {
         const m = orThrow(this.msg, "getFile");
-        const file = m.photo !== undefined ? m.photo[m.photo.length - 1] : (((((m.animation ?? m.audio) ?? m.document) ?? m.video) ?? m.video_note) ?? m.voice) ?? m.sticker;
+        const file = m.photo !== undefined ? m.photo[m.photo.length - 1] : m.animation ?? m.audio ?? m.document ?? m.video ?? m.video_note ?? m.voice ?? m.sticker;
         return this.api.getFile(orThrow(file, "getFile").file_id, signal);
     }
     kickAuthor(...args) {
@@ -1505,411 +1505,233 @@ function copy(src, dst, off = 0) {
     dst.set(src, off);
     return src.byteLength;
 }
-const MIN_BUF_SIZE = 16;
-const CR = "\r".charCodeAt(0);
-const LF = "\n".charCodeAt(0);
-class BufferFullError extends Error {
-    name;
-    constructor(partial){
-        super("Buffer full");
-        this.partial = partial;
-        this.name = "BufferFullError";
-    }
-    partial;
-}
-class PartialReadError extends Error {
-    name = "PartialReadError";
-    partial;
-    constructor(){
-        super("Encountered UnexpectedEof, data only partially read");
-    }
-}
-class BufReader {
+const MAX_SIZE = 2 ** 32 - 2;
+class Buffer {
     #buf;
-    #rd;
-    #r = 0;
-    #w = 0;
-    #eof = false;
-    static create(r, size = 4096) {
-        return r instanceof BufReader ? r : new BufReader(r, size);
-    }
-    constructor(rd, size = 4096){
-        if (size < 16) {
-            size = MIN_BUF_SIZE;
-        }
-        this.#reset(new Uint8Array(size), rd);
-    }
-    size() {
-        return this.#buf.byteLength;
-    }
-    buffered() {
-        return this.#w - this.#r;
-    }
-    #fill = async ()=>{
-        if (this.#r > 0) {
-            this.#buf.copyWithin(0, this.#r, this.#w);
-            this.#w -= this.#r;
-            this.#r = 0;
-        }
-        if (this.#w >= this.#buf.byteLength) {
-            throw Error("bufio: tried to fill full buffer");
-        }
-        for(let i = 100; i > 0; i--){
-            const rr = await this.#rd.read(this.#buf.subarray(this.#w));
-            if (rr === null) {
-                this.#eof = true;
+    #off = 0;
+    #readable = new ReadableStream({
+        type: "bytes",
+        pull: (controller)=>{
+            const view = new Uint8Array(controller.byobRequest.view.buffer);
+            if (this.empty()) {
+                this.reset();
+                controller.close();
+                controller.byobRequest.respond(0);
                 return;
             }
-            assert(rr >= 0, "negative read");
-            this.#w += rr;
-            if (rr > 0) {
-                return;
-            }
-        }
-        throw new Error(`No progress after ${100} read() calls`);
-    };
-    reset(r) {
-        this.#reset(this.#buf, r);
+            const nread = copy(this.#buf.subarray(this.#off), view);
+            this.#off += nread;
+            controller.byobRequest.respond(nread);
+        },
+        autoAllocateChunkSize: 16_640
+    });
+    get readable() {
+        return this.#readable;
     }
-    #reset = (buf, rd)=>{
-        this.#buf = buf;
-        this.#rd = rd;
-        this.#eof = false;
-    };
-    async read(p) {
-        let rr = p.byteLength;
-        if (p.byteLength === 0) return rr;
-        if (this.#r === this.#w) {
-            if (p.byteLength >= this.#buf.byteLength) {
-                const rr1 = await this.#rd.read(p);
-                const nread = rr1 ?? 0;
-                assert(nread >= 0, "negative read");
-                return rr1;
-            }
-            this.#r = 0;
-            this.#w = 0;
-            rr = await this.#rd.read(this.#buf);
-            if (rr === 0 || rr === null) return rr;
-            assert(rr >= 0, "negative read");
-            this.#w += rr;
+    #writable = new WritableStream({
+        write: (chunk)=>{
+            const m = this.#grow(chunk.byteLength);
+            copy(chunk, this.#buf, m);
         }
-        const copied = copy(this.#buf.subarray(this.#r, this.#w), p, 0);
-        this.#r += copied;
-        return copied;
+    });
+    get writable() {
+        return this.#writable;
     }
-    async readFull(p) {
-        let bytesRead = 0;
-        while(bytesRead < p.length){
-            try {
-                const rr = await this.read(p.subarray(bytesRead));
-                if (rr === null) {
-                    if (bytesRead === 0) {
-                        return null;
-                    } else {
-                        throw new PartialReadError();
-                    }
-                }
-                bytesRead += rr;
-            } catch (err) {
-                if (err instanceof PartialReadError) {
-                    err.partial = p.subarray(0, bytesRead);
-                } else if (err instanceof Error) {
-                    const e = new PartialReadError();
-                    e.partial = p.subarray(0, bytesRead);
-                    e.stack = err.stack;
-                    e.message = err.message;
-                    e.cause = err.cause;
-                    throw err;
-                }
-                throw err;
-            }
-        }
-        return p;
+    constructor(ab){
+        this.#buf = ab === undefined ? new Uint8Array(0) : new Uint8Array(ab);
     }
-    async readByte() {
-        while(this.#r === this.#w){
-            if (this.#eof) return null;
-            await this.#fill();
-        }
-        const c = this.#buf[this.#r];
-        this.#r++;
-        return c;
+    bytes(options = {
+        copy: true
+    }) {
+        if (options.copy === false) return this.#buf.subarray(this.#off);
+        return this.#buf.slice(this.#off);
     }
-    async readString(delim) {
-        if (delim.length !== 1) {
-            throw new Error("Delimiter should be a single character");
-        }
-        const buffer = await this.readSlice(delim.charCodeAt(0));
-        if (buffer === null) return null;
-        return new TextDecoder().decode(buffer);
+    empty() {
+        return this.#buf.byteLength <= this.#off;
     }
-    async readLine() {
-        let line = null;
-        try {
-            line = await this.readSlice(LF);
-        } catch (err) {
-            if (err instanceof Deno.errors.BadResource) {
-                throw err;
-            }
-            let partial;
-            if (err instanceof PartialReadError) {
-                partial = err.partial;
-                assert(partial instanceof Uint8Array, "bufio: caught error from `readSlice()` without `partial` property");
-            }
-            if (!(err instanceof BufferFullError)) {
-                throw err;
-            }
-            partial = err.partial;
-            if (!this.#eof && partial && partial.byteLength > 0 && partial[partial.byteLength - 1] === CR) {
-                assert(this.#r > 0, "bufio: tried to rewind past start of buffer");
-                this.#r--;
-                partial = partial.subarray(0, partial.byteLength - 1);
-            }
-            if (partial) {
-                return {
-                    line: partial,
-                    more: !this.#eof
-                };
-            }
-        }
-        if (line === null) {
-            return null;
-        }
-        if (line.byteLength === 0) {
-            return {
-                line,
-                more: false
-            };
-        }
-        if (line[line.byteLength - 1] == LF) {
-            let drop = 1;
-            if (line.byteLength > 1 && line[line.byteLength - 2] === CR) {
-                drop = 2;
-            }
-            line = line.subarray(0, line.byteLength - drop);
-        }
-        return {
-            line,
-            more: false
-        };
+    get length() {
+        return this.#buf.byteLength - this.#off;
     }
-    async readSlice(delim) {
-        let s = 0;
-        let slice;
-        while(true){
-            let i = this.#buf.subarray(this.#r + s, this.#w).indexOf(delim);
-            if (i >= 0) {
-                i += s;
-                slice = this.#buf.subarray(this.#r, this.#r + i + 1);
-                this.#r += i + 1;
-                break;
-            }
-            if (this.#eof) {
-                if (this.#r === this.#w) {
-                    return null;
-                }
-                slice = this.#buf.subarray(this.#r, this.#w);
-                this.#r = this.#w;
-                break;
-            }
-            if (this.buffered() >= this.#buf.byteLength) {
-                this.#r = this.#w;
-                const oldbuf = this.#buf;
-                const newbuf = this.#buf.slice(0);
-                this.#buf = newbuf;
-                throw new BufferFullError(oldbuf);
-            }
-            s = this.#w - this.#r;
-            try {
-                await this.#fill();
-            } catch (err) {
-                if (err instanceof PartialReadError) {
-                    err.partial = slice;
-                } else if (err instanceof Error) {
-                    const e = new PartialReadError();
-                    e.partial = slice;
-                    e.stack = err.stack;
-                    e.message = err.message;
-                    e.cause = err.cause;
-                    throw err;
-                }
-                throw err;
-            }
-        }
-        return slice;
+    get capacity() {
+        return this.#buf.buffer.byteLength;
     }
-    async peek(n) {
+    truncate(n) {
+        if (n === 0) {
+            this.reset();
+            return;
+        }
+        if (n < 0 || n > this.length) {
+            throw Error("bytes.Buffer: truncation out of range");
+        }
+        this.#reslice(this.#off + n);
+    }
+    reset() {
+        this.#reslice(0);
+        this.#off = 0;
+    }
+    #tryGrowByReslice(n) {
+        const l = this.#buf.byteLength;
+        if (n <= this.capacity - l) {
+            this.#reslice(l + n);
+            return l;
+        }
+        return -1;
+    }
+    #reslice(len) {
+        assert(len <= this.#buf.buffer.byteLength);
+        this.#buf = new Uint8Array(this.#buf.buffer, 0, len);
+    }
+    #grow(n1) {
+        const m1 = this.length;
+        if (m1 === 0 && this.#off !== 0) {
+            this.reset();
+        }
+        const i = this.#tryGrowByReslice(n1);
+        if (i >= 0) {
+            return i;
+        }
+        const c = this.capacity;
+        if (n1 <= Math.floor(c / 2) - m1) {
+            copy(this.#buf.subarray(this.#off), this.#buf);
+        } else if (c + n1 > MAX_SIZE) {
+            throw new Error("The buffer cannot be grown beyond the maximum size.");
+        } else {
+            const buf = new Uint8Array(Math.min(2 * c + n1, MAX_SIZE));
+            copy(this.#buf.subarray(this.#off), buf);
+            this.#buf = buf;
+        }
+        this.#off = 0;
+        this.#reslice(Math.min(m1 + n1, MAX_SIZE));
+        return m1;
+    }
+    grow(n) {
         if (n < 0) {
-            throw Error("negative count");
+            throw Error("Buffer.grow: negative count");
         }
-        let avail = this.#w - this.#r;
-        while(avail < n && avail < this.#buf.byteLength && !this.#eof){
-            try {
-                await this.#fill();
-            } catch (err) {
-                if (err instanceof PartialReadError) {
-                    err.partial = this.#buf.subarray(this.#r, this.#w);
-                } else if (err instanceof Error) {
-                    const e = new PartialReadError();
-                    e.partial = this.#buf.subarray(this.#r, this.#w);
-                    e.stack = err.stack;
-                    e.message = err.message;
-                    e.cause = err.cause;
-                    throw err;
-                }
-                throw err;
-            }
-            avail = this.#w - this.#r;
-        }
-        if (avail === 0 && this.#eof) {
-            return null;
-        } else if (avail < n && this.#eof) {
-            return this.#buf.subarray(this.#r, this.#r + avail);
-        } else if (avail < n) {
-            throw new BufferFullError(this.#buf.subarray(this.#r, this.#w));
-        }
-        return this.#buf.subarray(this.#r, this.#r + n);
+        const m = this.#grow(n);
+        this.#reslice(m);
     }
 }
-class AbstractBufBase {
-    buf;
-    usedBufferBytes = 0;
-    err = null;
-    constructor(buf){
-        this.buf = buf;
-    }
+class BytesList {
+    #len = 0;
+    #chunks = [];
+    constructor(){}
     size() {
-        return this.buf.byteLength;
+        return this.#len;
     }
-    available() {
-        return this.buf.byteLength - this.usedBufferBytes;
-    }
-    buffered() {
-        return this.usedBufferBytes;
-    }
-}
-class BufWriter extends AbstractBufBase {
-    #writer;
-    static create(writer, size = 4096) {
-        return writer instanceof BufWriter ? writer : new BufWriter(writer, size);
-    }
-    constructor(writer, size = 4096){
-        super(new Uint8Array(size <= 0 ? 4096 : size));
-        this.#writer = writer;
-    }
-    reset(w) {
-        this.err = null;
-        this.usedBufferBytes = 0;
-        this.#writer = w;
-    }
-    async flush() {
-        if (this.err !== null) throw this.err;
-        if (this.usedBufferBytes === 0) return;
-        try {
-            const p = this.buf.subarray(0, this.usedBufferBytes);
-            let nwritten = 0;
-            while(nwritten < p.length){
-                nwritten += await this.#writer.write(p.subarray(nwritten));
-            }
-        } catch (e) {
-            if (e instanceof Error) {
-                this.err = e;
-            }
-            throw e;
+    add(value, start = 0, end = value.byteLength) {
+        if (value.byteLength === 0 || end - start === 0) {
+            return;
         }
-        this.buf = new Uint8Array(this.buf.length);
-        this.usedBufferBytes = 0;
+        checkRange(start, end, value.byteLength);
+        this.#chunks.push({
+            value,
+            end,
+            start,
+            offset: this.#len
+        });
+        this.#len += end - start;
     }
-    async write(data) {
-        if (this.err !== null) throw this.err;
-        if (data.length === 0) return 0;
-        let totalBytesWritten = 0;
-        let numBytesWritten = 0;
-        while(data.byteLength > this.available()){
-            if (this.buffered() === 0) {
-                try {
-                    numBytesWritten = await this.#writer.write(data);
-                } catch (e) {
-                    if (e instanceof Error) {
-                        this.err = e;
-                    }
-                    throw e;
-                }
+    shift(n) {
+        if (n === 0) {
+            return;
+        }
+        if (this.#len <= n) {
+            this.#chunks = [];
+            this.#len = 0;
+            return;
+        }
+        const idx = this.getChunkIndex(n);
+        this.#chunks.splice(0, idx);
+        const [chunk] = this.#chunks;
+        if (chunk) {
+            const diff = n - chunk.offset;
+            chunk.start += diff;
+        }
+        let offset = 0;
+        for (const chunk1 of this.#chunks){
+            chunk1.offset = offset;
+            offset += chunk1.end - chunk1.start;
+        }
+        this.#len = offset;
+    }
+    getChunkIndex(pos) {
+        let max = this.#chunks.length;
+        let min = 0;
+        while(true){
+            const i = min + Math.floor((max - min) / 2);
+            if (i < 0 || this.#chunks.length <= i) {
+                return -1;
+            }
+            const { offset , start , end  } = this.#chunks[i];
+            const len = end - start;
+            if (offset <= pos && pos < offset + len) {
+                return i;
+            } else if (offset + len <= pos) {
+                min = i + 1;
             } else {
-                numBytesWritten = copy(data, this.buf, this.usedBufferBytes);
-                this.usedBufferBytes += numBytesWritten;
-                await this.flush();
+                max = i - 1;
             }
-            totalBytesWritten += numBytesWritten;
-            data = data.subarray(numBytesWritten);
         }
-        numBytesWritten = copy(data, this.buf, this.usedBufferBytes);
-        this.usedBufferBytes += numBytesWritten;
-        totalBytesWritten += numBytesWritten;
-        return totalBytesWritten;
+    }
+    get(i) {
+        if (i < 0 || this.#len <= i) {
+            throw new Error("out of range");
+        }
+        const idx = this.getChunkIndex(i);
+        const { value , offset , start  } = this.#chunks[idx];
+        return value[start + i - offset];
+    }
+    *iterator(start = 0) {
+        const startIdx = this.getChunkIndex(start);
+        if (startIdx < 0) return;
+        const first = this.#chunks[startIdx];
+        let firstOffset = start - first.offset;
+        for(let i = startIdx; i < this.#chunks.length; i++){
+            const chunk = this.#chunks[i];
+            for(let j = chunk.start + firstOffset; j < chunk.end; j++){
+                yield chunk.value[j];
+            }
+            firstOffset = 0;
+        }
+    }
+    slice(start, end = this.#len) {
+        if (end === start) {
+            return new Uint8Array();
+        }
+        checkRange(start, end, this.#len);
+        const result = new Uint8Array(end - start);
+        const startIdx = this.getChunkIndex(start);
+        const endIdx = this.getChunkIndex(end - 1);
+        let written = 0;
+        for(let i = startIdx; i < endIdx; i++){
+            const chunk = this.#chunks[i];
+            const len = chunk.end - chunk.start;
+            result.set(chunk.value.subarray(chunk.start, chunk.end), written);
+            written += len;
+        }
+        const last = this.#chunks[endIdx];
+        const rest = end - start - written;
+        result.set(last.value.subarray(last.start, last.start + rest), written);
+        return result;
+    }
+    concat() {
+        const result = new Uint8Array(this.#len);
+        let sum = 0;
+        for (const { value , start , end  } of this.#chunks){
+            result.set(value.subarray(start, end), sum);
+            sum += end - start;
+        }
+        return result;
     }
 }
-class BufWriterSync extends AbstractBufBase {
-    #writer;
-    static create(writer, size = 4096) {
-        return writer instanceof BufWriterSync ? writer : new BufWriterSync(writer, size);
-    }
-    constructor(writer, size = 4096){
-        super(new Uint8Array(size <= 0 ? 4096 : size));
-        this.#writer = writer;
-    }
-    reset(w) {
-        this.err = null;
-        this.usedBufferBytes = 0;
-        this.#writer = w;
-    }
-    flush() {
-        if (this.err !== null) throw this.err;
-        if (this.usedBufferBytes === 0) return;
-        try {
-            const p = this.buf.subarray(0, this.usedBufferBytes);
-            let nwritten = 0;
-            while(nwritten < p.length){
-                nwritten += this.#writer.writeSync(p.subarray(nwritten));
-            }
-        } catch (e) {
-            if (e instanceof Error) {
-                this.err = e;
-            }
-            throw e;
-        }
-        this.buf = new Uint8Array(this.buf.length);
-        this.usedBufferBytes = 0;
-    }
-    writeSync(data) {
-        if (this.err !== null) throw this.err;
-        if (data.length === 0) return 0;
-        let totalBytesWritten = 0;
-        let numBytesWritten = 0;
-        while(data.byteLength > this.available()){
-            if (this.buffered() === 0) {
-                try {
-                    numBytesWritten = this.#writer.writeSync(data);
-                } catch (e) {
-                    if (e instanceof Error) {
-                        this.err = e;
-                    }
-                    throw e;
-                }
-            } else {
-                numBytesWritten = copy(data, this.buf, this.usedBufferBytes);
-                this.usedBufferBytes += numBytesWritten;
-                this.flush();
-            }
-            totalBytesWritten += numBytesWritten;
-            data = data.subarray(numBytesWritten);
-        }
-        numBytesWritten = copy(data, this.buf, this.usedBufferBytes);
-        this.usedBufferBytes += numBytesWritten;
-        totalBytesWritten += numBytesWritten;
-        return totalBytesWritten;
+function checkRange(start, end, len) {
+    if (start < 0 || len < start || end < 0 || len < end || end < start) {
+        throw new Error("invalid range");
     }
 }
+"\r".charCodeAt(0);
+"\n".charCodeAt(0);
 const DEFAULT_BUFFER_SIZE = 32 * 1024;
 function readableStreamFromIterable(iterable) {
     const iterator = iterable[Symbol.asyncIterator]?.() ?? iterable[Symbol.iterator]?.();
@@ -1942,8 +1764,122 @@ async function* iterateReader(r, options) {
         yield b.subarray(0, result);
     }
 }
-"\r".charCodeAt(0);
-"\n".charCodeAt(0);
+const CR = "\r".charCodeAt(0);
+const LF = "\n".charCodeAt(0);
+class LineStream extends TransformStream {
+    #bufs = new BytesList();
+    #prevHadCR = false;
+    constructor(){
+        super({
+            transform: (chunk, controller)=>{
+                this.#handle(chunk, controller);
+            },
+            flush: (controller)=>{
+                controller.enqueue(this.#mergeBufs(false));
+            }
+        });
+    }
+    #handle(chunk, controller) {
+        const lfIndex = chunk.indexOf(LF);
+        if (this.#prevHadCR) {
+            this.#prevHadCR = false;
+            if (lfIndex === 0) {
+                controller.enqueue(this.#mergeBufs(true));
+                this.#handle(chunk.subarray(1), controller);
+                return;
+            }
+        }
+        if (lfIndex === -1) {
+            if (chunk.at(-1) === CR) {
+                this.#prevHadCR = true;
+            }
+            this.#bufs.add(chunk);
+        } else {
+            let crOrLfIndex = lfIndex;
+            if (chunk[lfIndex - 1] === CR) {
+                crOrLfIndex--;
+            }
+            this.#bufs.add(chunk.subarray(0, crOrLfIndex));
+            controller.enqueue(this.#mergeBufs(false));
+            this.#handle(chunk.subarray(lfIndex + 1), controller);
+        }
+    }
+    #mergeBufs(prevHadCR) {
+        const mergeBuf = this.#bufs.concat();
+        this.#bufs = new BytesList();
+        if (prevHadCR) {
+            return mergeBuf.subarray(0, -1);
+        } else {
+            return mergeBuf;
+        }
+    }
+}
+class DelimiterStream extends TransformStream {
+    #bufs = new BytesList();
+    #delimiter;
+    #inspectIndex = 0;
+    #matchIndex = 0;
+    #delimLen;
+    #delimLPS;
+    constructor(delimiter){
+        super({
+            transform: (chunk, controller)=>{
+                this.#handle(chunk, controller);
+            },
+            flush: (controller)=>{
+                controller.enqueue(this.#bufs.concat());
+            }
+        });
+        this.#delimiter = delimiter;
+        this.#delimLen = delimiter.length;
+        this.#delimLPS = createLPS(delimiter);
+    }
+    #handle(chunk2, controller2) {
+        this.#bufs.add(chunk2);
+        let localIndex = 0;
+        while(this.#inspectIndex < this.#bufs.size()){
+            if (chunk2[localIndex] === this.#delimiter[this.#matchIndex]) {
+                this.#inspectIndex++;
+                localIndex++;
+                this.#matchIndex++;
+                if (this.#matchIndex === this.#delimLen) {
+                    const matchEnd = this.#inspectIndex - this.#delimLen;
+                    const readyBytes = this.#bufs.slice(0, matchEnd);
+                    controller2.enqueue(readyBytes);
+                    this.#bufs.shift(this.#inspectIndex);
+                    this.#inspectIndex = 0;
+                    this.#matchIndex = 0;
+                }
+            } else {
+                if (this.#matchIndex === 0) {
+                    this.#inspectIndex++;
+                    localIndex++;
+                } else {
+                    this.#matchIndex = this.#delimLPS[this.#matchIndex - 1];
+                }
+            }
+        }
+    }
+}
+function createLPS(pat) {
+    const lps = new Uint8Array(pat.length);
+    lps[0] = 0;
+    let prefixEnd = 0;
+    let i = 1;
+    while(i < lps.length){
+        if (pat[i] == pat[prefixEnd]) {
+            prefixEnd++;
+            lps[i] = prefixEnd;
+            i++;
+        } else if (prefixEnd === 0) {
+            lps[i] = 0;
+            i++;
+        } else {
+            prefixEnd = lps[prefixEnd - 1];
+        }
+    }
+    return lps;
+}
 const isDeno = typeof Deno !== "undefined";
 const DEBUG = "DEBUG";
 if (isDeno) {
@@ -3072,27 +3008,27 @@ const path = isWindows ? mod : mod1;
 const { join: join2 , normalize: normalize2  } = path;
 const path1 = isWindows ? mod : mod1;
 const { basename: basename2 , delimiter: delimiter2 , dirname: dirname2 , extname: extname2 , format: format2 , fromFileUrl: fromFileUrl2 , isAbsolute: isAbsolute2 , join: join3 , normalize: normalize3 , parse: parse4 , relative: relative2 , resolve: resolve2 , sep: sep2 , toFileUrl: toFileUrl2 , toNamespacedPath: toNamespacedPath2 ,  } = path1;
-var l = Object.create;
+var l1 = Object.create;
 var o = Object.defineProperty;
 var r = Object.getOwnPropertyDescriptor;
-var m1 = Object.getOwnPropertyNames;
-var n = Object.getPrototypeOf, s1 = Object.prototype.hasOwnProperty;
-var i = (t, e)=>()=>(e || t((e = {
+var m2 = Object.getOwnPropertyNames;
+var n2 = Object.getPrototypeOf, s1 = Object.prototype.hasOwnProperty;
+var i1 = (t, e)=>()=>(e || t((e = {
             exports: {}
         }).exports, e), e.exports);
 var p = (t, e, d, f)=>{
-    if (e && typeof e == "object" || typeof e == "function") for (let _ of m1(e))!s1.call(t, _) && _ !== d && o(t, _, {
+    if (e && typeof e == "object" || typeof e == "function") for (let _ of m2(e))!s1.call(t, _) && _ !== d && o(t, _, {
         get: ()=>e[_],
         enumerable: !(f = r(e, _)) || f.enumerable
     });
     return t;
 };
-var c = (t, e, d)=>(d = t != null ? l(n(t)) : {}, p(e || !t || !t.__esModule ? o(d, "default", {
+var c1 = (t, e, d)=>(d = t != null ? l1(n2(t)) : {}, p(e || !t || !t.__esModule ? o(d, "default", {
         value: t,
         enumerable: !0
     }) : d, t));
-var u = i(()=>{});
-var x = c(u()), { default: a , ...b } = x;
+var u = i1(()=>{});
+var x = c1(u()), { default: a , ...b } = x;
 const debug = browser$1("grammy:warn");
 class InputFile {
     consumed = false;
@@ -4291,7 +4227,121 @@ function sleep(seconds) {
     return new Promise((r)=>setTimeout(r, 1000 * seconds));
 }
 browser$1("grammy:session");
+const SECRET_HEADER = "X-Telegram-Bot-Api-Secret-Token";
+const express = (req, res)=>({
+        update: Promise.resolve(req.body),
+        header: req.header(SECRET_HEADER),
+        end: ()=>res.end(),
+        respond: (json)=>{
+            res.set("Content-Type", "application/json");
+            res.send(json);
+        },
+        unauthorized: ()=>{
+            res.send(401, "secret token is wrong");
+        }
+    });
+const koa = (ctx)=>({
+        update: Promise.resolve(ctx.request.body),
+        header: ctx.get(SECRET_HEADER),
+        end: ()=>{
+            ctx.body = "";
+        },
+        respond: (json)=>{
+            ctx.set("Content-Type", "application/json");
+            ctx.response.body = json;
+        },
+        unauthorized: ()=>{
+            ctx.status = 401;
+        }
+    });
+const fastify = (req, reply)=>({
+        update: Promise.resolve(req.body),
+        header: req.headers[SECRET_HEADER.toLowerCase()],
+        end: ()=>reply.status(200).send(),
+        respond: (json)=>reply.send(json),
+        unauthorized: ()=>reply.code(401).send("secret token is wrong")
+    });
+const adapters = {
+    express,
+    koa,
+    fastify
+};
+const stdHttp = (req)=>{
+    let resolveResponse;
+    return {
+        update: req.json(),
+        header: req.headers.get(SECRET_HEADER) || undefined,
+        end: ()=>{
+            if (resolveResponse) resolveResponse(new Response());
+        },
+        respond: (json)=>{
+            if (resolveResponse) {
+                const res = new Response(json, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                resolveResponse(res);
+            }
+        },
+        unauthorized: ()=>{
+            if (resolveResponse) {
+                const res = new Response("secret token is wrong", {
+                    status: 401
+                });
+                resolveResponse(res);
+            }
+        },
+        handlerReturn: new Promise((resolve)=>{
+            resolveResponse = resolve;
+        })
+    };
+};
+const oak = (ctx)=>({
+        update: ctx.request.body({
+            type: "json"
+        }).value,
+        header: ctx.request.headers.get(SECRET_HEADER) || undefined,
+        end: ()=>ctx.response.status = 200,
+        respond: (json)=>{
+            ctx.response.type = "json";
+            ctx.response.body = json;
+        },
+        unauthorized: ()=>{
+            ctx.response.status = 401;
+        }
+    });
+const serveHttp = (requestEvent)=>({
+        update: requestEvent.request.json(),
+        header: requestEvent.request.headers.get(SECRET_HEADER) || undefined,
+        end: ()=>requestEvent.respondWith(new Response(undefined, {
+                status: 200
+            })),
+        respond: (json)=>requestEvent.respondWith(new Response(JSON.stringify(json), {
+                status: 200
+            })),
+        unauthorized: ()=>requestEvent.respondWith(new Response('"unauthorized"', {
+                status: 401,
+                statusText: "secret token is wrong"
+            }))
+    });
+const adapters1 = {
+    "std/http": stdHttp,
+    oak,
+    serveHttp,
+    ...adapters
+};
 browser$1("grammy:error");
+const callbackAdapter = (update, callback, header, unauthorized = ()=>callback('"unauthorized"'))=>({
+        update: Promise.resolve(update),
+        respond: callback,
+        header,
+        unauthorized
+    });
+({
+    ...adapters1,
+    callback: callbackAdapter
+});
 function getBot(token) {
     const bot = new Bot(token);
     bot.on("message", (ctx)=>ctx.reply("Hello, World!"));
