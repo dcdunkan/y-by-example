@@ -39,13 +39,12 @@ export default function ExampleHeader({ example }: { example: Example }) {
           setRunning(true);
 
           const liveStatus =
-            `Example is active at <a class="hover:text-grammy-500 hover:underline" href="https://telegram.me/${username}">@${username}</a>.`;
-
+            `Example is active at <a class="text-grammy-500 hover:underline" href="https://telegram.me/${username}">@${username}</a>.`;
           const showConfetti = localStorage.getItem("showConfetti");
           if (showConfetti !== "false") {
             setDesc("Yay! Welcome to grammY!");
             setTimeout(() => setDesc(liveStatus), 4000);
-            // localStorage.setItem("showConfetti", "false");
+            localStorage.setItem("showConfetti", "false");
             await confetti({
               particleCount: 1000,
               ticks: 500,
@@ -61,7 +60,9 @@ export default function ExampleHeader({ example }: { example: Example }) {
       }).catch(() => {
         setBusy(false);
         setRunning(false);
-        setDesc("Error occurred while running :(");
+        setDesc(
+          `<span style="color: #ef4444">Error occurred while running :(</span>`,
+        );
       });
     }
   }
@@ -98,7 +99,9 @@ export default function ExampleHeader({ example }: { example: Example }) {
             onClick={run}
             disabled={busy}
           >
-            {running ? <Stop /> : busy ? <Loading /> : <Start />}
+            {example.run
+              ? running ? <Stop /> : busy ? <Loading /> : <Start />
+              : ""}
           </button>
         )}
       </div>
