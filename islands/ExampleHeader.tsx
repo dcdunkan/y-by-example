@@ -99,9 +99,7 @@ export default function ExampleHeader({ example }: { example: Example }) {
             onClick={run}
             disabled={busy}
           >
-            {example.run
-              ? running ? <Stop /> : busy ? <Loading /> : <Start />
-              : ""}
+            {running ? <Stop /> : busy ? <Loading /> : <Start />}
           </button>
         )}
       </div>
