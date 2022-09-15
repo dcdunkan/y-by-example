@@ -7,17 +7,18 @@
  *
  * Format bot's text messages using parse modes.
  */
-// Telegram allows you to format your messages and make them look better.
-// By providing 'parse_mode' option while sending messages, your bot can also do this.
 
-// As usual, import the main `Bot` class from grammY.
+// Telegram allows you to format your messages and make them look better.
+// By providing the <code>parse_mode</code> option while sending messages, your bot can also do this.
+
+// As usual, import the main <code>Bot</code> class from grammY.
 import { Bot } from "https://deno.land/x/grammy@v1.11.0/mod.ts";
 
-// Next step: create an instance of the bot using your Bot Token.
+// Next step: create an instance of the bot using your bot token.
 const bot = new Bot("BOT_TOKEN");
 
-// Lets say a bold hello to the user, when they use the `/start` command.
-// We're using "MarkdownV2" parse mode for it.
+// Lets say a bold hello to the user, when they use the <code>/start</code> command.
+// We're using <code>MarkdownV2</code> parse mode for it.
 bot.command("start", async (ctx) => {
   await ctx.reply("*Hello there\!*", {
     parse_mode: "MarkdownV2",

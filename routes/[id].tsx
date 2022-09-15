@@ -126,9 +126,10 @@ export default function ExamplePage(props: PageProps<Data>) {
 
         {example.introduction && (
           <div class={tw`mt-4`}>
-            <p class={tw`text-gray-700`}>
-              {example.introduction}
-            </p>
+            <p
+              class={tw`text-gray-700`}
+              dangerouslySetInnerHTML={{ __html: example.introduction }}
+            />
           </div>
         )}
 
@@ -148,9 +149,10 @@ export default function ExamplePage(props: PageProps<Data>) {
 
         {example.conclusion && (
           <div class={tw`mt-4`}>
-            <p class={tw`text-gray-700`}>
-              {example.conclusion}
-            </p>
+            <p
+              class={tw`text-gray-700`}
+              dangerouslySetInnerHTML={{ __html: example.conclusion }}
+            />
           </div>
         )}
 
@@ -288,9 +290,10 @@ function SnippetComponent(props: {
     <div
       class={tw`grid grid-cols-1 sm:grid-cols-5 gap-x-6 transition duration-150 ease-in`}
     >
-      <div class={tw`py-4 text-gray-700 col-span-2 select-none`}>
-        {props.snippet.text}
-      </div>
+      <div
+        class={tw`py-4 text-gray-700 col-span-2`}
+        dangerouslySetInnerHTML={{ __html: props.snippet.text }}
+      />
       <div
         class={tw`col-span-3 relative bg-gray-100 ${
           props.firstOfFile ? "rounded-t-md" : ""
