@@ -17,6 +17,9 @@ const bot = new Bot("BOT_TOKEN");
 // Construct a keyboard.
 const inlineKeyboard = new InlineKeyboard().text("click", "click-payload");
 
+// You can also add link buttons.
+inlineKeyboard.url("grammY docs", "https://grammy.dev");
+
 // Send a keyboard along with a message.
 bot.command("start", async (ctx) => {
   await ctx.reply("Curious? Click me!", { reply_markup: inlineKeyboard });
