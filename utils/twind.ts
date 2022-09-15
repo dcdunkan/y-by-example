@@ -1,5 +1,5 @@
 import { IS_BROWSER } from "$fresh/runtime.ts";
-import { Configuration, setup } from "twind";
+import { apply, Configuration, setup } from "twind";
 
 export * from "twind";
 
@@ -18,6 +18,9 @@ export const config: Configuration = {
         },
       },
     },
+  },
+  preflight: {
+    code: apply`font-mono bg-gray-100 inline box-border p-1 rounded-sm`,
   },
 };
 
