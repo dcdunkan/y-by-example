@@ -1,4 +1,3 @@
-/** @jsx h */
 import { h } from "preact";
 import { tw } from "@twind";
 import { Grammy } from "./Logos.tsx";

@@ -1,5 +1,3 @@
-/** @jsx h */
-import { h } from "preact";
 import { tw } from "twind";
 import { useEffect, useState } from "preact/hooks";
 import { Loading, Start, Stop } from "../components/Icons.tsx";

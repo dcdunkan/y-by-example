@@ -13,5 +13,9 @@
     "files": {
       "exclude": ["./static"]
     }
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
   }
 }
