@@ -1,7 +1,6 @@
-import { Fragment, h } from "preact";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { tw } from "@twind";
+import { tw } from "twind";
 import { CircleArrow } from "../components/Icons.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Example, ExampleSnippet, parseExample } from "../utils/example.ts";

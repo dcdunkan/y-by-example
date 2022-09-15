@@ -1,4 +1,3 @@
-import { Fragment, h } from "preact";
 import { AppProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { tw } from "twind";
