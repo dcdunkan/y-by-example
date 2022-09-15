@@ -1,6 +1,6 @@
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { tw } from "@twind";
+import { tw } from "twind";
 import { CONTENTS } from "../utils/contents.ts";
 import { Example, parseExample } from "../utils/example.ts";
 import { Footer } from "../components/Footer.tsx";

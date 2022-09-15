@@ -4,6 +4,10 @@
     "bundle_examples": "deno run -A scripts/bundle_examples.ts"
   },
   "importMap": "./import_map.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  },
   "fmt": {
     "files": {
       "exclude": ["./static"]
@@ -13,9 +17,5 @@
     "files": {
       "exclude": ["./static"]
     }
-  },
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact"
   }
 }
