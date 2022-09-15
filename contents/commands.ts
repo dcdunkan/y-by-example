@@ -10,7 +10,7 @@
 // Commands are the standard way to trigger your bot to do something.
 // Lets find out how to make your bot obey when you send a /command.
 
-// Lets setup the bot as we seen in the <a href="/hello-world">Hello World example</a>.
+// Lets setup the bot as we seen in the <a href="/hello-world" class="text-grammy-500 hover:underline decoration-grammy-500">Hello World example</a>.
 import { Bot } from "https://deno.land/x/grammy@v1.11.0/mod.ts";
 const bot = new Bot("BOT_TOKEN");
 
