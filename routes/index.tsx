@@ -1,4 +1,3 @@
-import { Fragment, h } from "preact";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
@@ -7,7 +6,6 @@ import { Example, parseExample } from "../utils/example.ts";
 import { Footer } from "../components/Footer.tsx";
 import BotTokenInput from "../islands/BotTokenInput.tsx";
 import { GrammyByExample } from "../components/Logos.tsx";
-import { Start } from "../components/Icons.tsx";
 
 interface Data {
   examples: Example[];
